@@ -1781,7 +1781,7 @@ export default function Home() {
                       {PROMPT_HELPERS.map((helper) => (
                         <Card 
                           key={helper.title}
-                          onClick={() => executePromptHelper(helper.prompt)}
+                          onClick={() => handleSendMessage(helper.prompt)}
                           className="p-3 border-slate-800 hover:border-orange-500/50 hover:bg-slate-900/20 bg-slate-900/40 backdrop-blur-md cursor-pointer group transition-all"
                         >
                           <h4 className="text-[11.5px] font-bold text-white group-hover:text-orange-400 transition-colors">{helper.title}</h4>
