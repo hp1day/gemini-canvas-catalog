@@ -1,0 +1,8 @@
+# apphosting.yaml
+# Cloud Run service configuration for the Next.js production server
+runConfig:
+  cpu: 1
+  memoryMiB: 512
+  minInstances: 0
+  maxInstances: 10
+  concurrency: 80
