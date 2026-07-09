@@ -51,7 +51,7 @@ interface Part {
   name: string
   division: "siding" | "windows" | "metal" | "custom"
   divisionLabel: string
-  brand: "Ply Gem" | "Simonton" | "Mastic" | "MBCI" | "Star Building Systems" | "Environmental Stoneworks" | "Custom Fabricated"
+  brand: "Ply Gem" | "Simonton" | "Mastic" | "MBCI" | "Star Building Systems" | "Environmental Stoneworks" | "Custom Fabricated" | "Metl-Span"
   description: string
   weight: number // in lbs
   cost: number // in USD
