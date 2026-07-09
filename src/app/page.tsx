@@ -1105,45 +1105,45 @@ export default function Home() {
   ]
 
   return (
-    <div className="flex flex-col flex-1 bg-[#050B14] text-slate-100 font-sans min-h-screen relative overflow-hidden">
+    <div className="flex flex-col flex-1 bg-[#f8fafc] text-slate-900 font-sans min-h-screen relative overflow-hidden">
       {/* Premium background grid & light glow effects */}
-      <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_24px] pointer-events-none opacity-25" />
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-orange-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_24px] pointer-events-none opacity-50" />
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-orange-500/3 blur-[120px] rounded-full pointer-events-none" />
 
       {/* ==========================================
           HEADER SYSTEM
           ========================================== */}
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4">
+      <header className="sticky top-0 z-30 bg-[#0f2d59] text-white shadow-md border-b border-[#0b2447] px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-orange-500 p-0.5 shadow-lg shadow-blue-500/20 flex items-center justify-center">
-            <div className="h-full w-full rounded-[10px] bg-slate-900 flex items-center justify-center">
-              <Building2 className="h-5 w-5 text-blue-400 animate-pulse" />
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-orange-500 p-0.5 shadow-lg flex items-center justify-center">
+            <div className="h-full w-full rounded-[10px] bg-[#0f2d59] flex items-center justify-center">
+              <Building2 className="h-5 w-5 text-orange-400 animate-pulse" />
             </div>
           </div>
           <div>
-            <h1 className="text-base font-bold tracking-tight text-white flex items-center gap-2">
-              CORNERSTONE <span className="text-slate-400 font-medium">|</span> <span className="text-xs font-normal px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded-full border border-blue-500/20">Parts Catalog System</span>
+            <h1 className="text-base font-extrabold tracking-wider text-white flex items-center gap-2">
+              CORNERSTONE <span className="text-[#1a4f7c] font-medium">|</span> <span className="text-[10px] font-bold tracking-wide px-2.5 py-0.5 bg-orange-500/20 text-orange-300 rounded-full border border-orange-500/30">Parts Catalog System</span>
             </h1>
-            <p className="text-[9px] text-slate-400 uppercase tracking-widest font-mono font-semibold">North American Exterior Cladding Database</p>
+            <p className="text-[9px] text-slate-300 uppercase tracking-widest font-mono font-bold">North American Exterior Cladding Database</p>
           </div>
         </div>
 
         {/* Live BOM Metrics counter */}
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-4 bg-slate-900/60 border border-slate-800 rounded-xl px-4 py-1.5 font-mono text-[11px] text-slate-300 shadow-lg shadow-slate-950/40">
+          <div className="flex items-center gap-4 bg-[#081f3c] border border-[#1b3a5f] rounded-xl px-4 py-1.5 font-mono text-[11px] text-slate-200 shadow-md">
             <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
               <span className="text-slate-400">Database:</span>
-              <span className="text-emerald-400 font-bold">Online</span>
+              <span className="text-emerald-300 font-bold">Online</span>
             </div>
-            <div className="h-3 w-px bg-slate-800" />
+            <div className="h-3 w-px bg-[#1b3a5f]" />
             <div>
-              <span className="text-slate-400">Project Weight:</span> <strong className="text-blue-400 font-bold">{bomMetrics.totalWeight.toFixed(1)} lbs</strong>
+              <span className="text-slate-400">Project Weight:</span> <strong className="text-sky-300 font-bold">{bomMetrics.totalWeight.toFixed(1)} lbs</strong>
             </div>
-            <div className="h-3 w-px bg-slate-800" />
+            <div className="h-3 w-px bg-[#1b3a5f]" />
             <div>
-              <span className="text-slate-400">Materials Est:</span> <strong className="text-emerald-400 font-bold">${bomMetrics.totalCost.toFixed(2)}</strong>
+              <span className="text-slate-400">Materials Est:</span> <strong className="text-emerald-300 font-bold">${bomMetrics.totalCost.toFixed(2)}</strong>
             </div>
           </div>
           
@@ -1163,7 +1163,7 @@ export default function Home() {
                 }
               ])
             }}
-            className="text-xs gap-1.5 h-8 border-slate-800 hover:bg-slate-900 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="text-xs gap-1.5 h-8 border-[#1b3a5f] hover:bg-[#15345b] text-slate-300 hover:text-white transition-colors cursor-pointer bg-[#0f2d59]"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             Reset Database
@@ -1180,15 +1180,15 @@ export default function Home() {
         <section className="xl:col-span-8 flex flex-col gap-6">
           
           <Tabs defaultValue="parts" className="w-full flex flex-col flex-1">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-4">
-              <TabsList className="bg-slate-950/80 p-1 border border-slate-800 rounded-xl shadow-inner shadow-black">
-                <TabsTrigger value="parts" className="text-xs font-semibold py-1.5 px-3 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white cursor-pointer flex items-center gap-1.5 transition-all">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-slate-200 pb-4 mb-4">
+              <TabsList className="bg-slate-200 p-1 border border-slate-300 rounded-xl shadow-inner">
+                <TabsTrigger value="parts" className="text-xs font-bold py-1.5 px-3 rounded-lg data-[state=active]:bg-[#0f2d59] data-[state=active]:text-white text-slate-600 hover:text-slate-900 cursor-pointer flex items-center gap-1.5 transition-all">
                   <Boxes className="h-3.5 w-3.5" /> Product Catalog
                 </TabsTrigger>
-                <TabsTrigger value="fabricator" className="text-xs font-semibold py-1.5 px-3 rounded-lg data-[state=active]:bg-purple-600 data-[state=active]:text-white cursor-pointer flex items-center gap-1.5 transition-all">
+                <TabsTrigger value="fabricator" className="text-xs font-bold py-1.5 px-3 rounded-lg data-[state=active]:bg-purple-700 data-[state=active]:text-white text-slate-600 hover:text-slate-900 cursor-pointer flex items-center gap-1.5 transition-all">
                   <Hammer className="h-3.5 w-3.5" /> Custom Flashing Configurator
                 </TabsTrigger>
-                <TabsTrigger value="chat" className="text-xs font-semibold py-1.5 px-3 rounded-lg data-[state=active]:bg-orange-600 data-[state=active]:text-white cursor-pointer flex items-center gap-1.5 transition-all">
+                <TabsTrigger value="chat" className="text-xs font-bold py-1.5 px-3 rounded-lg data-[state=active]:bg-orange-600 data-[state=active]:text-white text-slate-600 hover:text-slate-900 cursor-pointer flex items-center gap-1.5 transition-all">
                   <Sparkles className="h-3.5 w-3.5" /> Gemini Technical Assistant
                 </TabsTrigger>
               </TabsList>
@@ -1201,16 +1201,16 @@ export default function Home() {
                     placeholder="Search parts, brands, specs..." 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 h-8.5 text-xs bg-slate-950/75 border-slate-800 focus:border-blue-500 rounded-lg text-white placeholder:text-slate-500 w-full lg:w-64"
+                    className="pl-9 h-8.5 text-xs bg-white border-slate-200 focus:border-[#0f2d59] rounded-lg text-slate-800 placeholder:text-slate-400 w-full lg:w-64 shadow-sm"
                   />
                 </div>
 
-                <div className="flex items-center gap-1 bg-slate-900/60 border border-slate-800 rounded-lg p-1">
+                <div className="flex items-center gap-1 bg-slate-100 border border-slate-200 rounded-lg p-1">
                   <Button 
                     variant={viewMode === "grid" ? "default" : "ghost"}
                     size="icon"
                     onClick={() => setViewMode("grid")}
-                    className={`h-7.5 w-7.5 rounded ${viewMode === "grid" ? "bg-slate-800 text-white" : "text-slate-400 hover:text-white"}`}
+                    className={`h-7.5 w-7.5 rounded transition-all ${viewMode === "grid" ? "bg-white border border-slate-200 text-[#0f2d59] shadow-sm font-bold" : "text-slate-500 hover:text-[#0f2d59]"}`}
                   >
                     <Grid className="h-3.5 w-3.5" />
                   </Button>
@@ -1218,7 +1218,7 @@ export default function Home() {
                     variant={viewMode === "list" ? "default" : "ghost"}
                     size="icon"
                     onClick={() => setViewMode("list")}
-                    className={`h-7.5 w-7.5 rounded ${viewMode === "list" ? "bg-slate-800 text-white" : "text-slate-400 hover:text-white"}`}
+                    className={`h-7.5 w-7.5 rounded transition-all ${viewMode === "list" ? "bg-white border border-slate-200 text-[#0f2d59] shadow-sm font-bold" : "text-slate-500 hover:text-[#0f2d59]"}`}
                   >
                     <List className="h-3.5 w-3.5" />
                   </Button>
@@ -1241,10 +1241,10 @@ export default function Home() {
                   <button
                     key={div.id}
                     onClick={() => setActiveCategory(div.id)}
-                    className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all duration-200 cursor-pointer ${
+                    className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-all duration-200 cursor-pointer shadow-sm ${
                       activeDivision === div.id 
-                        ? "bg-slate-800 border-blue-500/50 text-white shadow-lg shadow-blue-500/5" 
-                        : "bg-slate-900/40 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-white"
+                        ? "bg-[#0f2d59] border-[#0f2d59] text-white shadow-md shadow-blue-900/10" 
+                        : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:text-slate-900 hover:bg-slate-50"
                     }`}
                   >
                     {div.label}
@@ -1253,15 +1253,15 @@ export default function Home() {
               </div>
 
               {/* Sort by selector */}
-              <div className="flex items-center justify-between text-xs text-slate-400 mb-3 px-1">
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-3 px-1">
                 <span>Displaying <strong>{filteredParts.length}</strong> matching building parts</span>
                 <div className="flex items-center gap-2">
-                  <Filter className="h-3 w-3" />
+                  <Filter className="h-3 w-3 text-slate-400" />
                   <span>Sort:</span>
                   <select 
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="bg-slate-950 border border-slate-800 rounded px-2 py-0.5 text-xs text-slate-300 focus:outline-none focus:border-blue-500"
+                    className="bg-white border border-slate-200 rounded px-2 py-0.5 text-xs text-slate-700 focus:outline-none focus:border-[#0f2d59] shadow-sm cursor-pointer"
                   >
                     <option value="name-asc">Part Name (A-Z)</option>
                     <option value="name-desc">Part Name (Z-A)</option>
@@ -1280,11 +1280,11 @@ export default function Home() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="flex flex-col items-center justify-center py-20 text-center bg-slate-950/40 border border-slate-900 rounded-2xl"
+                    className="flex flex-col items-center justify-center py-20 text-center bg-white border border-slate-200 rounded-2xl shadow-sm"
                   >
-                    <Package className="h-12 w-12 text-slate-600 mb-4 animate-bounce" />
-                    <h3 className="text-sm font-semibold text-white">No Building Parts Found</h3>
-                    <p className="text-xs text-slate-500 mt-1 max-w-sm">No items matching your search query are currently index. Try clearing filters or create a custom profile using our Custom Flashing Configurator!</p>
+                    <Package className="h-12 w-12 text-slate-300 mb-4 animate-bounce" />
+                    <h3 className="text-sm font-extrabold text-slate-800">No Building Parts Found</h3>
+                    <p className="text-xs text-slate-500 mt-1 max-w-sm leading-relaxed">No items matching your search query are currently indexed. Try clearing filters or create a custom profile using our Custom Flashing Configurator!</p>
                   </motion.div>
                 ) : viewMode === "grid" ? (
                   <motion.div 
@@ -1293,15 +1293,15 @@ export default function Home() {
                   >
                     {filteredParts.map((part) => {
                       const brandBadgeColor = 
-                        part.brand === "Mastic" ? "border-teal-500/20 text-teal-400 bg-teal-500/5" :
-                        part.brand === "Ply Gem" ? "border-emerald-500/20 text-emerald-400 bg-emerald-500/5" :
-                        part.brand === "Simonton" ? "border-sky-500/20 text-sky-400 bg-sky-500/5" :
-                        part.brand === "MBCI" ? "border-orange-500/20 text-orange-400 bg-orange-500/5" :
-                        part.brand === "Star Building Systems" ? "border-indigo-500/20 text-indigo-400 bg-indigo-500/5" :
-                        part.brand === "Environmental Stoneworks" ? "border-amber-500/20 text-amber-400 bg-amber-500/5" :
-                        "border-purple-500/20 text-purple-400 bg-purple-500/5";
+                        part.brand === "Mastic" ? "border-teal-200 text-teal-700 bg-teal-50" :
+                        part.brand === "Ply Gem" ? "border-emerald-200 text-emerald-700 bg-emerald-50" :
+                        part.brand === "Simonton" ? "border-sky-200 text-sky-700 bg-sky-50" :
+                        part.brand === "MBCI" ? "border-orange-200 text-orange-700 bg-orange-50" :
+                        part.brand === "Star Building Systems" ? "border-indigo-200 text-indigo-700 bg-indigo-50" :
+                        part.brand === "Environmental Stoneworks" ? "border-amber-200 text-amber-700 bg-amber-50" :
+                        "border-purple-200 text-purple-700 bg-purple-50";
 
-                      const borderSelection = selectedPart?.id === part.id ? "ring-2 ring-blue-500 border-transparent shadow-lg shadow-blue-500/10" : "border-slate-800 hover:border-slate-700";
+                      const borderSelection = selectedPart?.id === part.id ? "ring-2 ring-[#0f2d59] border-transparent shadow-md shadow-blue-900/10" : "border-slate-200 hover:border-slate-300 hover:shadow-sm";
 
                       return (
                         <motion.div
@@ -1314,41 +1314,41 @@ export default function Home() {
                         >
                           <Card 
                             onClick={() => setSelectedPart(part)}
-                            className={`group bg-slate-900/40 backdrop-blur-md transition-all cursor-pointer ${borderSelection}`}
+                            className={`group bg-white transition-all cursor-pointer overflow-hidden ${borderSelection}`}
                           >
                             <div className="grid grid-cols-3 h-full">
                               
                               {/* Left blueprint block */}
-                              <div className="col-span-1 bg-slate-950/70 p-3 flex items-center justify-center border-r border-slate-900 relative">
+                              <div className="col-span-1 bg-[#0b2447] p-3 flex items-center justify-center border-r border-slate-100 relative">
                                 {part.svgBlueprint}
                                 {part.isSynthesized && (
-                                  <div className="absolute top-1 left-1.5">
-                                    <span className="text-[7px] font-bold uppercase font-mono tracking-widest px-1 py-0.5 bg-purple-500/20 border border-purple-500/30 text-purple-300 rounded">CONFIGURED</span>
+                                  <div className="absolute top-1.5 left-1.5">
+                                    <span className="text-[7px] font-extrabold uppercase font-mono tracking-widest px-1 py-0.5 bg-purple-600 text-white rounded">CONFIGURED</span>
                                   </div>
                                 )}
                               </div>
 
                               {/* Right details block */}
-                              <div className="col-span-2 p-4 flex flex-col justify-between">
+                              <div className="col-span-2 p-4 flex flex-col justify-between bg-white">
                                 <div>
                                   <div className="flex items-center justify-between gap-2 mb-1.5">
                                     <span className={`text-[9px] font-bold tracking-wider px-2 py-0.5 rounded-full border ${brandBadgeColor}`}>
                                       {part.brand}
                                     </span>
-                                    <span className="text-[10px] font-mono text-slate-500 font-medium">#{part.id}</span>
+                                    <span className="text-[10px] font-mono text-slate-400 font-medium">#{part.id}</span>
                                   </div>
-                                  <h3 className="text-xs font-bold leading-snug text-white group-hover:text-blue-400 transition-colors line-clamp-1">
+                                  <h3 className="text-xs font-bold leading-snug text-slate-800 group-hover:text-[#0f2d59] transition-colors line-clamp-1">
                                     {part.name}
                                   </h3>
-                                  <p className="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-relaxed">
+                                  <p className="text-[11px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">
                                     {part.description}
                                   </p>
                                 </div>
 
-                                <div className="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between">
+                                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
                                   <div className="flex flex-col">
-                                    <span className="text-[9px] uppercase tracking-wider text-slate-500 font-mono">Weight / Price</span>
-                                    <span className="text-xs font-semibold text-slate-200">{part.weight} lbs <span className="text-slate-600">/</span> <strong className="text-emerald-400">${part.cost.toFixed(2)}</strong></span>
+                                    <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono">Weight / Price</span>
+                                    <span className="text-xs font-semibold text-slate-700">{part.weight} lbs <span className="text-slate-300">/</span> <strong className="text-emerald-600">${part.cost.toFixed(2)}</strong></span>
                                   </div>
                                   
                                   <div className="flex gap-1">
@@ -1359,9 +1359,9 @@ export default function Home() {
                                         e.stopPropagation()
                                         setSelectedPart(part)
                                       }}
-                                      className="h-7 w-7 p-0 rounded-md border-slate-800 hover:bg-slate-800"
+                                      className="h-7 w-7 p-0 rounded-md border-slate-200 hover:bg-slate-50"
                                     >
-                                      <Maximize2 className="h-3 w-3 text-slate-400 hover:text-white" />
+                                      <Maximize2 className="h-3 w-3 text-slate-400 hover:text-slate-600" />
                                     </Button>
                                     <Button 
                                       size="sm"
@@ -1369,7 +1369,7 @@ export default function Home() {
                                         e.stopPropagation()
                                         addToBom(part)
                                       }}
-                                      className="h-7 px-2.5 text-[10px] font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-md gap-1 flex items-center cursor-pointer"
+                                      className="h-7 px-2.5 text-[10px] font-bold bg-[#0f2d59] hover:bg-[#163c63] text-white rounded-md gap-1 flex items-center cursor-pointer shadow-sm"
                                     >
                                       <Plus className="h-3 w-3" /> Add
                                     </Button>
@@ -1387,11 +1387,11 @@ export default function Home() {
                   // List / Table display
                   <motion.div 
                     layout
-                    className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/30 backdrop-blur-md"
+                    className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
                   >
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="border-b border-slate-800 bg-slate-950/60 text-[10px] font-mono uppercase text-slate-400">
+                        <tr className="border-b border-slate-200 bg-slate-50 text-[10px] font-mono uppercase text-slate-500 font-bold">
                           <th className="py-2.5 px-4">Part Spec</th>
                           <th className="py-2.5 px-4">Division</th>
                           <th className="py-2.5 px-4">Brand</th>
@@ -1401,24 +1401,24 @@ export default function Home() {
                           <th className="py-2.5 px-4"></th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-800/40 text-xs">
+                      <tbody className="divide-y divide-slate-100 text-xs">
                         {filteredParts.map((part) => (
                           <tr 
                             key={part.id}
                             onClick={() => setSelectedPart(part)}
-                            className={`hover:bg-slate-900/30 transition-colors cursor-pointer ${selectedPart?.id === part.id ? "bg-slate-900/60 font-semibold" : ""}`}
+                            className={`hover:bg-slate-50/50 transition-colors cursor-pointer ${selectedPart?.id === part.id ? "bg-slate-100/70 font-semibold" : ""}`}
                           >
                             <td className="py-3 px-4">
                               <div>
-                                <span className="font-bold text-slate-200 line-clamp-1">{part.name}</span>
-                                <span className="text-[10px] font-mono text-slate-500">#{part.id}</span>
+                                <span className="font-bold text-slate-800 line-clamp-1">{part.name}</span>
+                                <span className="text-[10px] font-mono text-slate-400">#{part.id}</span>
                               </div>
                             </td>
-                            <td className="py-3 px-4 text-slate-400 text-[11px]">{part.divisionLabel}</td>
-                            <td className="py-3 px-4 text-slate-300 font-medium">{part.brand}</td>
-                            <td className="py-3 px-4 text-slate-400 line-clamp-1 max-w-[120px]">{part.material}</td>
-                            <td className="py-3 px-4 text-right text-slate-300 font-mono">{part.weight} lbs</td>
-                            <td className="py-3 px-4 text-right text-emerald-400 font-mono font-semibold">${part.cost.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-slate-500 text-[11px]">{part.divisionLabel}</td>
+                            <td className="py-3 px-4 text-slate-700 font-medium">{part.brand}</td>
+                            <td className="py-3 px-4 text-slate-500 line-clamp-1 max-w-[120px]">{part.material}</td>
+                            <td className="py-3 px-4 text-right text-slate-700 font-mono">{part.weight} lbs</td>
+                            <td className="py-3 px-4 text-right text-emerald-600 font-mono font-bold">${part.cost.toFixed(2)}</td>
                             <td className="py-3 px-4 text-right">
                               <Button
                                 size="sm"
@@ -1426,7 +1426,7 @@ export default function Home() {
                                   e.stopPropagation()
                                   addToBom(part)
                                 }}
-                                className="h-7 px-2.5 text-[10px] font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-md cursor-pointer"
+                                className="h-7 px-2.5 text-[10px] font-bold bg-[#0f2d59] hover:bg-[#163c63] text-white rounded-md cursor-pointer shadow-sm"
                               >
                                 <Plus className="h-3 w-3" /> Add
                               </Button>
@@ -1446,17 +1446,17 @@ export default function Home() {
                 
                 {/* Configuration form panel */}
                 <div className="lg:col-span-7 flex flex-col gap-5">
-                  <div className="bg-slate-950/60 p-5 rounded-2xl border border-slate-800">
-                    <h3 className="text-sm font-bold text-white flex items-center gap-1.5 mb-1">
-                      <Wrench className="h-4 w-4 text-purple-400" /> Extrusion Flashing Parameters
+                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 className="text-sm font-extrabold text-slate-800 flex items-center gap-1.5 mb-1">
+                      <Wrench className="h-4 w-4 text-purple-600" /> Extrusion Flashing Parameters
                     </h3>
-                    <p className="text-[11px] text-slate-400 mb-5">Configure a custom aluminum, steel, or vinyl structural trim panel. Our press brake system will automatically bend and fabricate to your exact length.</p>
+                    <p className="text-[11px] text-slate-500 mb-5 leading-relaxed">Configure a custom aluminum, steel, or vinyl structural trim panel. Our press brake system will automatically bend and fabricate to your exact length.</p>
                     
                     <div className="flex flex-col gap-4">
                       
                       {/* Profile Shape */}
                       <div>
-                        <label className="text-[10px] uppercase font-mono text-slate-400 block mb-2">1. Select profile shape</label>
+                        <label className="text-[10px] uppercase font-mono text-slate-500 block mb-2 font-semibold">1. Select profile shape</label>
                         <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                           {[
                             { id: "j-channel", label: "J-Channel" },
@@ -1471,10 +1471,10 @@ export default function Home() {
                                 if (fabricateStep !== -1) return
                                 setTrimProfile(style.id as any)
                               }}
-                              className={`py-2 px-1 rounded-lg border text-center transition-all cursor-pointer ${
+                              className={`py-2 px-1 rounded-lg border text-center transition-all cursor-pointer shadow-sm ${
                                 trimProfile === style.id 
-                                  ? "bg-purple-600/10 border-purple-500 text-purple-300 font-bold" 
-                                  : "bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200"
+                                  ? "bg-purple-50 border-purple-600 text-purple-700 font-extrabold shadow-md shadow-purple-500/5" 
+                                  : "bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-800 hover:bg-slate-50"
                               }`}
                             >
                               <span className="text-[10px] block font-mono">{style.label}</span>
@@ -1486,8 +1486,8 @@ export default function Home() {
                       {/* Custom length slider */}
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <label className="text-[10px] uppercase font-mono text-slate-400">2. Custom Extrusion Length</label>
-                          <span className="text-xs font-mono font-bold text-purple-400">{trimLength} feet</span>
+                          <label className="text-[10px] uppercase font-mono text-slate-500 font-semibold">2. Custom Extrusion Length</label>
+                          <span className="text-xs font-mono font-extrabold text-purple-600">{trimLength} feet</span>
                         </div>
                         <input 
                           type="range" 
@@ -1499,9 +1499,9 @@ export default function Home() {
                             if (fabricateStep !== -1) return
                             setTrimLength(parseInt(e.target.value))
                           }}
-                          className="w-full accent-purple-500 bg-slate-900 h-1 rounded-lg"
+                          className="w-full accent-purple-600 bg-slate-200 h-1 rounded-lg cursor-pointer"
                         />
-                        <div className="flex justify-between text-[9px] text-slate-500 font-mono mt-1">
+                        <div className="flex justify-between text-[9px] text-slate-400 font-mono mt-1">
                           <span>5 ft (Min)</span>
                           <span>15 ft (Standard)</span>
                           <span>30 ft (Max-Extrusion limit)</span>
@@ -1511,14 +1511,14 @@ export default function Home() {
                       {/* Gauge Thickness & Substrate material */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="text-[10px] uppercase font-mono text-slate-400 block mb-1.5">3. Steel Thickness / Gauge</label>
+                          <label className="text-[10px] uppercase font-mono text-slate-500 block mb-1.5 font-semibold">3. Steel Thickness / Gauge</label>
                           <select
                             value={trimGauge}
                             onChange={(e) => {
                               if (fabricateStep !== -1) return
                               setTrimGauge(e.target.value)
                             }}
-                            className="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 focus:outline-none focus:border-purple-500 w-full"
+                            className="bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-700 focus:outline-none focus:border-purple-600 w-full shadow-sm cursor-pointer"
                           >
                             <option value="22 ga">22 Gauge (Heavy Structural - 0.030")</option>
                             <option value="24 ga">24 Gauge (Standard Commercial - 0.024")</option>
@@ -1528,14 +1528,14 @@ export default function Home() {
                         </div>
 
                         <div>
-                          <label className="text-[10px] uppercase font-mono text-slate-400 block mb-1.5">4. Substrate Material</label>
+                          <label className="text-[10px] uppercase font-mono text-slate-500 block mb-1.5 font-semibold">4. Substrate Material</label>
                           <select
                             value={trimMaterial}
                             onChange={(e) => {
                               if (fabricateStep !== -1) return
                               setTrimMaterial(e.target.value)
                             }}
-                            className="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 focus:outline-none focus:border-purple-500 w-full"
+                            className="bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-700 focus:outline-none focus:border-purple-600 w-full shadow-sm cursor-pointer"
                           >
                             <option value="Galvalume Steel">Galvalume Steel G90 Coating</option>
                             <option value="Painted Aluminum">High-Grade 3105 Aluminum</option>
@@ -1546,7 +1546,7 @@ export default function Home() {
 
                       {/* Electrostatic Finish Color */}
                       <div>
-                        <label className="text-[10px] uppercase font-mono text-slate-400 block mb-2">5. Electrostatically Cured Finish Color</label>
+                        <label className="text-[10px] uppercase font-mono text-slate-500 block mb-2 font-semibold">5. Electrostatically Cured Finish Color</label>
                         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                           {[
                             { name: "Cornerstone Navy", hex: "bg-blue-900 border-blue-400" },
@@ -1562,14 +1562,14 @@ export default function Home() {
                                 if (fabricateStep !== -1) return
                                 setTrimColor(col.name)
                               }}
-                              className={`p-1.5 rounded-lg border text-center transition-all cursor-pointer ${
+                              className={`p-1.5 rounded-lg border text-center transition-all cursor-pointer shadow-sm ${
                                 trimColor === col.name 
-                                  ? "border-purple-500 bg-slate-900/80 font-semibold" 
-                                  : "bg-slate-950 border-slate-900 text-slate-400 hover:border-slate-800"
+                                  ? "border-purple-600 bg-purple-50 font-extrabold text-purple-700 shadow-md shadow-purple-500/5" 
+                                  : "bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-800 hover:bg-slate-50"
                               }`}
                             >
                               <div className={`h-4 w-4 rounded-full mx-auto ${col.hex} mb-1`} />
-                              <span className="text-[8px] block leading-tight truncate">{col.name.split(" ")[1]}</span>
+                              <span className="text-[8px] block leading-tight truncate font-semibold">{col.name.split(" ")[1]}</span>
                             </button>
                           ))}
                         </div>
@@ -1582,11 +1582,11 @@ export default function Home() {
                   <Button
                     onClick={startFabricateSequence}
                     disabled={fabricateStep !== -1}
-                    className="w-full bg-purple-600 hover:bg-purple-500 disabled:bg-purple-900/40 disabled:text-slate-500 text-white font-bold h-11 rounded-xl text-xs tracking-wider uppercase cursor-pointer"
+                    className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-slate-100 disabled:text-slate-400 text-white font-extrabold h-11 rounded-xl text-xs tracking-wider uppercase cursor-pointer shadow-md transition-all"
                   >
                     {fabricateStep === -1 ? (
                       <span className="flex items-center justify-center gap-1.5">
-                        <Wrench className="h-4 w-4 animate-spin" /> Fabricate Custom Part
+                        <Wrench className="h-4 w-4" /> Fabricate Custom Part
                       </span>
                     ) : fabricateStep < 7 ? (
                       <span className="flex items-center justify-center gap-2">
@@ -1594,7 +1594,7 @@ export default function Home() {
                       </span>
                     ) : (
                       <span className="flex items-center justify-center gap-1">
-                        <Check className="h-4 w-4 text-emerald-400" /> CNC Fabrication Completed!
+                        <Check className="h-4 w-4 text-emerald-400 animate-bounce" /> CNC Fabrication Completed!
                       </span>
                     )}
                   </Button>
@@ -1602,8 +1602,8 @@ export default function Home() {
 
                 {/* Live rendering and fabrication terminal */}
                 <div className="lg:col-span-5 flex flex-col gap-4">
-                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-900 flex items-center justify-center h-48 relative">
-                    <div className="absolute top-2 right-3 font-mono text-[8px] text-purple-400">BLUEPRINT PREVIEW</div>
+                  <div className="bg-[#0b2447] p-4 rounded-2xl border border-slate-100 shadow-inner flex items-center justify-center h-48 relative">
+                    <div className="absolute top-2 right-3 font-mono text-[8px] text-purple-300">BLUEPRINT PREVIEW</div>
                     {renderConfiguredTrimSvg()}
                   </div>
 
@@ -1679,65 +1679,65 @@ export default function Home() {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[500px]">
                 
                 {/* Chat message dialog panel */}
-                <div className="lg:col-span-8 flex flex-col bg-slate-950/60 rounded-2xl border border-slate-900 overflow-hidden h-full">
-                  <div className="bg-slate-900/40 px-4 py-2.5 border-b border-slate-900 flex items-center justify-between text-xs text-slate-300 font-mono">
-                    <span className="flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5 text-orange-400" /> GEMINI AI SPEC ENGINE</span>
-                    <span className="text-[9px] text-slate-500">KNOWLEDGE BASIS: CORNERSTONE BRANDS v7.0</span>
+                <div className="lg:col-span-8 flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden h-full shadow-sm">
+                  <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between text-xs text-slate-600 font-mono">
+                    <span className="flex items-center gap-1.5 font-bold"><Sparkles className="h-3.5 w-3.5 text-orange-600 animate-pulse" /> GEMINI AI SPEC ENGINE</span>
+                    <span className="text-[9px] text-slate-400 font-bold">KNOWLEDGE BASIS: CORNERSTONE BRANDS v7.0</span>
                   </div>
 
                   {/* Messages bubble container */}
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs custom-scrollbar">
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs custom-scrollbar bg-slate-50/30">
                     {chatMessages.map((msg) => (
                       <div 
                         key={msg.id}
                         className={`flex gap-3 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
                       >
                         {msg.sender === "ai" && (
-                          <div className="h-7 w-7 rounded bg-orange-600/10 border border-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
+                          <div className="h-7 w-7 rounded bg-orange-50 border border-orange-200 text-orange-600 flex items-center justify-center shrink-0">
                             <Sparkles className="h-4 w-4" />
                           </div>
                         )}
                         <div className={`max-w-[85%] rounded-xl px-4 py-3 leading-relaxed flex flex-col gap-2 ${
                           msg.sender === "user" 
-                            ? "bg-blue-600 text-white font-medium" 
-                            : "bg-slate-900 text-slate-100 border border-slate-800"
+                            ? "bg-blue-600 text-white font-medium shadow-sm shadow-blue-600/10" 
+                            : "bg-white text-slate-800 border border-slate-200 shadow-sm"
                         }`}>
-                          <div className="whitespace-pre-line text-[11.5px] font-sans prose prose-invert max-w-none">
+                          <div className="whitespace-pre-line text-[11.5px] font-sans prose prose-slate max-w-none">
                             {msg.text}
                           </div>
 
                           {/* Render specification tables in responses */}
                           {msg.tableData && (
-                            <div className="rounded-lg border border-slate-800 overflow-hidden bg-slate-950 mt-1 select-text">
+                            <div className="rounded-lg border border-slate-200 overflow-hidden bg-white mt-1 select-text shadow-sm">
                               <table className="w-full text-left text-[10px] font-mono border-collapse">
                                 <thead>
-                                  <tr className="bg-slate-900/60 border-b border-slate-800 text-slate-500">
+                                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
                                     <th className="py-1 px-3">Specification Factor</th>
                                     <th className="py-1 px-3 text-right">Value Rating</th>
                                   </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-800/40 text-slate-300">
+                                <tbody className="divide-y divide-slate-100 text-slate-700">
                                   {msg.tableData.map((row, idx) => (
                                     <tr key={idx}>
                                       <td className="py-1 px-3">{row.label}</td>
-                                      <td className="py-1 px-3 text-right text-emerald-400 font-bold">{row.value}</td>
+                                      <td className="py-1 px-3 text-right text-emerald-600 font-bold">{row.value}</td>
                                     </tr>
                                   ))}
                                 </tbody>
                               </table>
                             </div>
                           )}
-                          <span className={`text-[8px] font-mono self-end ${msg.sender === "user" ? "text-blue-200" : "text-slate-500"}`}>{msg.timestamp}</span>
+                          <span className={`text-[8px] font-mono self-end ${msg.sender === "user" ? "text-blue-100" : "text-slate-400"}`}>{msg.timestamp}</span>
                         </div>
                       </div>
                     ))}
                     
                     {isAiTyping && (
                       <div className="flex gap-3 justify-start">
-                        <div className="h-7 w-7 rounded bg-orange-600/10 border border-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
+                        <div className="h-7 w-7 rounded bg-orange-50 border border-orange-200 text-orange-600 flex items-center justify-center shrink-0">
                           <Sparkles className="h-4 w-4 animate-spin" />
                         </div>
-                        <div className="bg-slate-900 rounded-xl px-4 py-3 text-slate-400 italic">
+                        <div className="bg-white rounded-xl px-4 py-3 text-slate-500 italic border border-slate-200 shadow-sm">
                           <span className="flex items-center gap-1">
                             Analyzing mechanical loads & searching exterior architectural standards...
                           </span>
@@ -1747,7 +1747,7 @@ export default function Home() {
                   </div>
 
                   {/* Chat input box */}
-                  <div className="p-3 border-t border-slate-900 bg-slate-950">
+                  <div className="p-3 border-t border-slate-200 bg-slate-50/50">
                     <form 
                       onSubmit={(e) => {
                         e.preventDefault()
@@ -1759,11 +1759,11 @@ export default function Home() {
                         placeholder="Ask about windload rating, thermal U-factor, purlin span spacing..."
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
-                        className="text-xs bg-slate-900 border-slate-800 text-white rounded-lg h-9.5 focus:border-orange-500"
+                        className="text-xs bg-white border-slate-200 text-slate-800 rounded-lg h-9.5 focus:border-[#0f2d59] placeholder:text-slate-400 shadow-sm"
                       />
                       <Button 
                         type="submit"
-                        className="bg-orange-600 hover:bg-orange-500 text-white rounded-lg h-9.5 px-4 cursor-pointer"
+                        className="bg-orange-600 hover:bg-orange-500 text-white rounded-lg h-9.5 px-4 cursor-pointer shadow-sm"
                       >
                         <Send className="h-4 w-4" />
                       </Button>
@@ -1773,8 +1773,8 @@ export default function Home() {
 
                 {/* Pre-loaded help templates panel */}
                 <div className="lg:col-span-4 flex flex-col gap-3 h-full">
-                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-900 flex-1 flex flex-col">
-                    <h3 className="text-xs font-bold font-mono tracking-widest text-slate-400 uppercase border-b border-slate-900 pb-2 mb-3">Specification Templates</h3>
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 flex-1 flex flex-col shadow-sm">
+                    <h3 className="text-xs font-bold font-mono tracking-widest text-slate-500 uppercase border-b border-slate-100 pb-2 mb-3">Specification Templates</h3>
                     <p className="text-[11px] text-slate-500 mb-4 leading-relaxed">Select a template below to simulate detailed engineering calculations for Cornerstone exterior components.</p>
                     
                     <div className="space-y-2 flex-1 overflow-y-auto custom-scrollbar">
@@ -1782,11 +1782,11 @@ export default function Home() {
                         <Card 
                           key={helper.title}
                           onClick={() => handleSendMessage(helper.prompt)}
-                          className="p-3 border-slate-800 hover:border-orange-500/50 hover:bg-slate-900/20 bg-slate-900/40 backdrop-blur-md cursor-pointer group transition-all"
+                          className="p-3 border-slate-200 hover:border-orange-500/50 hover:bg-orange-50/20 bg-slate-50 cursor-pointer group transition-all shadow-sm"
                         >
-                          <h4 className="text-[11.5px] font-bold text-white group-hover:text-orange-400 transition-colors">{helper.title}</h4>
-                          <p className="text-[10px] text-slate-400 mt-1 leading-normal line-clamp-2">{helper.prompt}</p>
-                          <span className="text-[9px] font-semibold text-orange-400 group-hover:underline flex items-center gap-1.5 mt-2">
+                          <h4 className="text-[11.5px] font-extrabold text-slate-800 group-hover:text-orange-600 transition-colors">{helper.title}</h4>
+                          <p className="text-[10px] text-slate-500 mt-1 leading-normal line-clamp-2">{helper.prompt}</p>
+                          <span className="text-[9px] font-bold text-orange-600 group-hover:underline flex items-center gap-1.5 mt-2">
                             {helper.short} <ArrowRight className="h-3 w-3" />
                           </span>
                         </Card>
@@ -1806,52 +1806,53 @@ export default function Home() {
         <section className="xl:col-span-4 flex flex-col gap-6">
           
           {/* Active component spec panel */}
-          <div className="bg-slate-950/60 rounded-2xl border border-slate-800 p-5 shadow-lg shadow-black/50">
-            <h3 className="text-xs font-bold font-mono tracking-widest text-slate-400 uppercase border-b border-slate-900 pb-2 mb-3 flex items-center gap-1.5">
-              <FileText className="h-4 w-4 text-blue-400" /> Architectural Spec Sheet
+          {/* Active component spec panel */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+            <h3 className="text-xs font-bold font-mono tracking-widest text-slate-500 uppercase border-b border-slate-100 pb-2 mb-3 flex items-center gap-1.5">
+              <FileText className="h-4 w-4 text-[#0f2d59]" /> Architectural Spec Sheet
             </h3>
 
             {selectedPart ? (
               <div className="flex flex-col">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full border border-blue-500/20 text-blue-400 bg-blue-500/5 uppercase font-mono">
+                  <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full border border-blue-200 text-blue-800 bg-blue-50 uppercase font-mono">
                     {selectedPart.brand}
                   </span>
-                  <span className="text-[10px] font-mono text-slate-500">#{selectedPart.id}</span>
+                  <span className="text-[10px] font-mono text-slate-400">#{selectedPart.id}</span>
                 </div>
 
-                <h4 className="text-sm font-bold text-white leading-snug">{selectedPart.name}</h4>
-                <p className="text-[11px] text-slate-300 leading-relaxed mt-2 bg-slate-950 p-3 rounded-lg border border-slate-900">
+                <h4 className="text-sm font-extrabold text-slate-800 leading-snug">{selectedPart.name}</h4>
+                <p className="text-[11px] text-slate-600 leading-relaxed mt-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
                   {selectedPart.description}
                 </p>
 
                 {/* Spec sheets details grid */}
                 <div className="mt-4 space-y-2 text-xs">
-                  <div className="flex justify-between py-1 border-b border-slate-900">
-                    <span className="text-slate-500 font-mono text-[10px] uppercase">Base Material:</span>
-                    <span className="text-slate-300 text-right">{selectedPart.material}</span>
+                  <div className="flex justify-between py-1 border-b border-slate-100">
+                    <span className="text-slate-400 font-mono text-[10px] uppercase font-semibold">Base Material:</span>
+                    <span className="text-slate-700 text-right font-medium">{selectedPart.material}</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-slate-900">
-                    <span className="text-slate-500 font-mono text-[10px] uppercase">Exterior Finish:</span>
-                    <span className="text-slate-300 text-right">{selectedPart.finish}</span>
+                  <div className="flex justify-between py-1 border-b border-slate-100">
+                    <span className="text-slate-400 font-mono text-[10px] uppercase font-semibold">Exterior Finish:</span>
+                    <span className="text-slate-700 text-right font-medium">{selectedPart.finish}</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-slate-900">
-                    <span className="text-slate-500 font-mono text-[10px] uppercase">Part Unit Weight:</span>
-                    <span className="text-slate-300 font-mono text-right font-semibold">{selectedPart.weight} lbs</span>
+                  <div className="flex justify-between py-1 border-b border-slate-100">
+                    <span className="text-slate-400 font-mono text-[10px] uppercase font-semibold">Part Unit Weight:</span>
+                    <span className="text-slate-700 font-mono text-right font-bold">{selectedPart.weight} lbs</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-slate-900">
-                    <span className="text-slate-500 font-mono text-[10px] uppercase">Unit List Price:</span>
-                    <span className="text-emerald-400 font-mono font-bold text-right">${selectedPart.cost.toFixed(2)}</span>
+                  <div className="flex justify-between py-1 border-b border-slate-100">
+                    <span className="text-slate-400 font-mono text-[10px] uppercase font-semibold">Unit List Price:</span>
+                    <span className="text-emerald-600 font-mono font-bold text-right">${selectedPart.cost.toFixed(2)}</span>
                   </div>
                   
                   {/* Detailed specific parameters */}
                   <div className="pt-2">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase block mb-1.5">Fabrication Dimensions & Ratings</span>
+                    <span className="text-[10px] font-mono text-slate-400 uppercase block mb-1.5 font-semibold">Fabrication Dimensions & Ratings</span>
                     <div className="grid grid-cols-2 gap-2">
                       {selectedPart.specs.map((sp, idx) => (
-                        <div key={idx} className="bg-slate-900/30 p-2 rounded border border-slate-900">
-                          <span className="text-[9px] text-slate-500 block leading-tight truncate">{sp.label}</span>
-                          <span className="text-[10px] font-semibold text-slate-300 block leading-tight mt-0.5">{sp.value}</span>
+                        <div key={idx} className="bg-slate-50 p-2 rounded border border-slate-100">
+                          <span className="text-[9px] text-slate-400 block leading-tight truncate">{sp.label}</span>
+                          <span className="text-[10px] font-bold text-slate-700 block leading-tight mt-0.5">{sp.value}</span>
                         </div>
                       ))}
                     </div>
@@ -1861,7 +1862,7 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-2 mt-5">
                   <Button 
                     onClick={() => addToBom(selectedPart)}
-                    className="bg-blue-600 hover:bg-blue-500 text-white font-bold h-9 rounded-lg text-xs cursor-pointer flex items-center justify-center gap-1"
+                    className="bg-[#0f2d59] hover:bg-[#163c63] text-white font-extrabold h-9 rounded-lg text-xs cursor-pointer flex items-center justify-center gap-1 shadow-sm"
                   >
                     <Plus className="h-4 w-4" /> Add to BOM
                   </Button>
@@ -1871,62 +1872,62 @@ export default function Home() {
                       // Simulated Spec sheet PDF download trigger
                       alert(`Exporting Technical Engineering Datasheet for ${selectedPart.id} as standardized CAD-specification format.`)
                     }}
-                    className="border-slate-800 hover:bg-slate-900 text-slate-400 hover:text-white h-9 rounded-lg text-xs cursor-pointer flex items-center justify-center gap-1.5"
+                    className="border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-slate-700 h-9 rounded-lg text-xs cursor-pointer flex items-center justify-center gap-1.5 shadow-sm bg-white"
                   >
                     <Download className="h-3.5 w-3.5" /> Technical CAD
                   </Button>
                 </div>
               </div>
             ) : (
-              <div className="text-slate-500 italic text-center py-10 text-[11px]">
+              <div className="text-slate-400 italic text-center py-10 text-[11px] leading-relaxed">
                 Select any component in the catalog to inspect detailed structural specs and dimensioned CAD blueprints.
               </div>
             )}
           </div>
 
           {/* Project Bill of Materials (BOM) / Project Cart */}
-          <div className="bg-slate-950/60 rounded-2xl border border-slate-800 p-5 flex-1 flex flex-col shadow-lg shadow-black/50 min-h-[300px]">
-            <h3 className="text-xs font-bold font-mono tracking-widest text-slate-400 uppercase border-b border-slate-900 pb-2 mb-3 flex items-center justify-between">
-              <span className="flex items-center gap-1.5"><Truck className="h-4 w-4 text-orange-400" /> Project Bill of Materials</span>
-              <span className="text-[10px] text-slate-500 font-mono">({bom.length} items)</span>
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 flex-1 flex flex-col shadow-sm min-h-[300px]">
+            <h3 className="text-xs font-bold font-mono tracking-widest text-slate-500 uppercase border-b border-slate-100 pb-2 mb-3 flex items-center justify-between">
+              <span className="flex items-center gap-1.5"><Truck className="h-4 w-4 text-orange-600" /> Project Bill of Materials</span>
+              <span className="text-[10px] text-slate-400 font-mono font-bold">({bom.length} items)</span>
             </h3>
 
             {/* BOM items container */}
             <div className="flex-1 overflow-y-auto space-y-2 max-h-[220px] custom-scrollbar">
               {bom.length === 0 ? (
-                <div className="text-slate-500 italic text-center py-12 text-[11px] h-full flex items-center justify-center">
+                <div className="text-slate-400 italic text-center py-12 text-[11px] h-full flex items-center justify-center leading-relaxed">
                   Your project Bill of Materials (BOM) is empty. Add parts from the catalog to tally weights and forecast freight logistics.
                 </div>
               ) : (
                 bom.map((item) => (
                   <div 
                     key={item.part.id}
-                    className="bg-slate-900/40 p-2.5 rounded-xl border border-slate-900 flex items-center justify-between gap-3 text-xs"
+                    className="bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center justify-between gap-3 text-xs shadow-sm"
                   >
                     <div className="flex-1 min-w-0">
-                      <h5 className="font-bold text-slate-200 truncate leading-snug">{item.part.name}</h5>
-                      <div className="flex items-center gap-2 mt-0.5 text-[10px] font-mono text-slate-500">
+                      <h5 className="font-extrabold text-slate-800 truncate leading-snug">{item.part.name}</h5>
+                      <div className="flex items-center gap-2 mt-0.5 text-[10px] font-mono text-slate-400">
                         <span>#{item.part.id}</span>
                         <span>•</span>
                         <span>{item.part.weight} lbs</span>
                         <span>•</span>
-                        <span className="text-emerald-400 font-bold">${item.part.cost.toFixed(2)}</span>
+                        <span className="text-emerald-600 font-bold">${item.part.cost.toFixed(2)}</span>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
                       {/* Quantity adjuster */}
-                      <div className="flex items-center bg-slate-950 rounded border border-slate-800/80 p-0.5 font-mono text-[11px]">
+                      <div className="flex items-center bg-white rounded border border-slate-200 p-0.5 font-mono text-[11px] shadow-sm">
                         <button 
                           onClick={() => updateQuantity(item.part.id, item.quantity - 1)}
-                          className="h-5 w-5 rounded text-slate-400 hover:text-white hover:bg-slate-900 flex items-center justify-center font-bold cursor-pointer"
+                          className="h-5 w-5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-100 flex items-center justify-center font-bold cursor-pointer"
                         >
                           -
                         </button>
-                        <span className="w-6 text-center text-slate-200 font-bold">{item.quantity}</span>
+                        <span className="w-6 text-center text-slate-800 font-extrabold">{item.quantity}</span>
                         <button 
                           onClick={() => updateQuantity(item.part.id, item.quantity + 1)}
-                          className="h-5 w-5 rounded text-slate-400 hover:text-white hover:bg-slate-900 flex items-center justify-center font-bold cursor-pointer"
+                          className="h-5 w-5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-100 flex items-center justify-center font-bold cursor-pointer"
                         >
                           +
                         </button>
@@ -1936,7 +1937,7 @@ export default function Home() {
                         size="icon" 
                         variant="ghost"
                         onClick={() => removeFromBom(item.part.id)}
-                        className="h-6 w-6 rounded hover:bg-slate-900 text-slate-500 hover:text-red-400 transition-colors"
+                        className="h-6 w-6 rounded hover:bg-red-50 text-slate-400 hover:text-red-600 transition-colors"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -1948,31 +1949,31 @@ export default function Home() {
 
             {/* Freight & transport calculations */}
             {bom.length > 0 && (
-              <div className="pt-3 border-t border-slate-900 mt-4 space-y-3">
+              <div className="pt-3 border-t border-slate-200 mt-4 space-y-3">
                 
                 {/* Freight transport type prediction */}
-                <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-900 flex gap-3 text-xs">
-                  <div className="h-8.5 w-8.5 rounded-lg bg-orange-600/10 border border-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 flex gap-3 text-xs">
+                  <div className="h-8.5 w-8.5 rounded-lg bg-orange-50 border border-orange-100 text-orange-600 flex items-center justify-center shrink-0">
                     <Truck className="h-4.5 w-4.5 animate-pulse" />
                   </div>
                   <div>
-                    <h5 className="font-bold text-slate-200 text-[11px] leading-tight">Logistics: {bomMetrics.logisticsType}</h5>
-                    <p className="text-[10px] text-slate-400 leading-normal mt-0.5">{bomMetrics.logisticsDesc}</p>
+                    <h5 className="font-extrabold text-slate-800 text-[11px] leading-tight font-sans">Logistics: {bomMetrics.logisticsType}</h5>
+                    <p className="text-[10px] text-slate-500 leading-normal mt-0.5">{bomMetrics.logisticsDesc}</p>
                   </div>
                 </div>
 
-                <div className="space-y-1.5 text-xs text-slate-400 pt-1 font-mono">
+                <div className="space-y-1.5 text-xs text-slate-500 pt-1 font-mono">
                   <div className="flex justify-between">
                     <span>Total components count:</span>
-                    <strong className="text-slate-200 font-bold">{bomMetrics.activeComponentsCount} pcs</strong>
+                    <strong className="text-slate-800 font-bold">{bomMetrics.activeComponentsCount} pcs</strong>
                   </div>
                   <div className="flex justify-between">
                     <span>Total structural weight:</span>
-                    <strong className="text-blue-400 font-bold">{bomMetrics.totalWeight.toFixed(1)} lbs</strong>
+                    <strong className="text-blue-700 font-bold">{bomMetrics.totalWeight.toFixed(1)} lbs</strong>
                   </div>
-                  <div className="flex justify-between text-sm pt-1 border-t border-slate-900">
-                    <span className="text-slate-300 font-bold">Project materials total:</span>
-                    <strong className="text-emerald-400 font-extrabold text-sm">${bomMetrics.totalCost.toFixed(2)}</strong>
+                  <div className="flex justify-between text-sm pt-1 border-t border-slate-100">
+                    <span className="text-slate-700 font-extrabold">Project materials total:</span>
+                    <strong className="text-emerald-600 font-extrabold text-sm">${bomMetrics.totalCost.toFixed(2)}</strong>
                   </div>
                 </div>
 
@@ -1980,7 +1981,7 @@ export default function Home() {
                   onClick={() => {
                     alert(`Finalizing specification list. Generated comprehensive Excel BOM and certified CAD export for ${bomMetrics.activeComponentsCount} components. Preparing shipment forecast via ${bomMetrics.logisticsType}.`)
                   }}
-                  className="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold h-9 rounded-lg text-xs tracking-wider uppercase cursor-pointer"
+                  className="w-full bg-orange-600 hover:bg-orange-500 text-white font-extrabold h-9 rounded-lg text-xs tracking-wider uppercase cursor-pointer shadow-md shadow-orange-600/10"
                 >
                   Generate CAD & Spec Quote
                 </Button>
