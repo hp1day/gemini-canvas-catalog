@@ -787,6 +787,7 @@ export default function Home() {
   const [chatInput, setChatInput] = useState("")
   const [isAiTyping, setIsAiTyping] = useState(false)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null) // New image upload state
+  const [activeTab, setActiveTab] = useState<string>("parts") // Track selected workspace tab
 
   // Custom Flashing/Trim Configurator State
   const [trimProfile, setTrimProfile] = useState<"j-channel" | "corner-post" | "ridge-cap" | "drip-edge" | "u-trim">("j-channel")
@@ -1200,9 +1201,9 @@ export default function Home() {
       <main className="flex-1 max-w-[1720px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 xl:grid-cols-12 gap-6 relative z-10">
         
         {/* LEFT & CENTER WORKSPACE (Tabs: Parts Catalog, Fabricator, Chat) */}
-        <section className="xl:col-span-8 flex flex-col gap-6">
+        <section className={`${activeTab === "chat" ? "xl:col-span-12" : "xl:col-span-8"} flex flex-col gap-6 transition-all duration-300`}>
           
-          <Tabs defaultValue="parts" className="w-full flex flex-col flex-1">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col flex-1">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-slate-200 pb-4 mb-4">
               <TabsList className="bg-slate-200/80 p-1.5 border border-slate-300 rounded-2xl shadow-inner flex items-center h-12 gap-1.5">
                 <TabsTrigger 
@@ -1860,7 +1861,8 @@ export default function Home() {
         </section>
 
         {/* RIGHT DRAWER: ACTIVE PART SPECS & PROJECT BOM (CART) */}
-        <section className="xl:col-span-4 flex flex-col gap-6">
+        {activeTab !== "chat" && (
+          <section className="xl:col-span-4 flex flex-col gap-6 animate-in fade-in slide-in-from-right duration-300">
           
           {/* Active component spec panel */}
           {/* Active component spec panel */}
@@ -2088,6 +2090,7 @@ export default function Home() {
           </div>
 
         </section>
+        )}
 
       </main>
     </div>
