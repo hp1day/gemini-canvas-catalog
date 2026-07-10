@@ -1708,176 +1708,150 @@ export default function Home() {
 
             {/* TAB 3: GEMINI TECHNICAL ASSISTANT CHAT */}
             <TabsContent value="chat" className="mt-0 focus-visible:ring-0 focus-visible:outline-none">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[500px]">
-                
-                {/* Chat message dialog panel */}
-                <div className="lg:col-span-8 flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden h-full shadow-sm">
-                  <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between text-xs text-slate-600 font-mono">
-                    <span className="flex items-center gap-1.5 font-bold"><Sparkles className="h-3.5 w-3.5 text-orange-600 animate-pulse" /> GEMINI AI SPEC ENGINE</span>
-                    <span className="text-[9px] text-slate-400 font-bold">KNOWLEDGE BASIS: CORNERSTONE BRANDS v7.0</span>
-                  </div>
+              <div className="flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden h-[500px] shadow-sm">
+                <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between text-xs text-slate-600 font-mono">
+                  <span className="flex items-center gap-1.5 font-bold"><Sparkles className="h-3.5 w-3.5 text-orange-600 animate-pulse" /> GEMINI AI SPEC ENGINE</span>
+                  <span className="text-[9px] text-slate-400 font-bold">KNOWLEDGE BASIS: CORNERSTONE BRANDS v7.0</span>
+                </div>
 
-                  {/* Messages bubble container */}
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs custom-scrollbar bg-slate-50/30">
-                    {chatMessages.map((msg) => (
-                      <div 
-                        key={msg.id}
-                        className={`flex gap-3 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                      >
-                        {msg.sender === "ai" && (
-                          <div className="h-7 w-7 rounded bg-orange-50 border border-orange-200 text-orange-600 flex items-center justify-center shrink-0">
-                            <Sparkles className="h-4 w-4" />
+                {/* Messages bubble container */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs custom-scrollbar bg-slate-50/30">
+                  {chatMessages.map((msg) => (
+                    <div 
+                      key={msg.id}
+                      className={`flex gap-3 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                    >
+                      {msg.sender === "ai" && (
+                        <div className="h-7 w-7 rounded bg-orange-50 border border-orange-200 text-orange-600 flex items-center justify-center shrink-0">
+                          <Sparkles className="h-4 w-4" />
+                        </div>
+                      )}
+                      <div className={`max-w-[85%] rounded-xl px-4 py-3 leading-relaxed flex flex-col gap-2 ${
+                        msg.sender === "user" 
+                          ? "bg-blue-600 text-white font-medium shadow-sm shadow-blue-600/10" 
+                          : "bg-white text-slate-800 border border-slate-200 shadow-sm"
+                      }`}>
+                        {/* Render image inside bubble if present */}
+                        {msg.imageUrl && (
+                          <div className="relative rounded-lg overflow-hidden border border-slate-100 max-h-48 max-w-sm mb-2 shadow-sm bg-slate-100 shrink-0">
+                            <img src={msg.imageUrl} alt="Uploaded component photographs" className="object-contain max-h-48 w-full" />
                           </div>
                         )}
-                        <div className={`max-w-[85%] rounded-xl px-4 py-3 leading-relaxed flex flex-col gap-2 ${
-                          msg.sender === "user" 
-                            ? "bg-blue-600 text-white font-medium shadow-sm shadow-blue-600/10" 
-                            : "bg-white text-slate-800 border border-slate-200 shadow-sm"
-                        }`}>
-                          {/* Render image inside bubble if present */}
-                          {msg.imageUrl && (
-                            <div className="relative rounded-lg overflow-hidden border border-slate-100 max-h-48 max-w-sm mb-2 shadow-sm bg-slate-100 shrink-0">
-                              <img src={msg.imageUrl} alt="Uploaded component photographs" className="object-contain max-h-48 w-full" />
-                            </div>
-                          )}
-                          <div className="whitespace-pre-line text-[11.5px] font-sans prose prose-slate max-w-none">
-                            {msg.text}
-                          </div>
+                        <div className="whitespace-pre-line text-[11.5px] font-sans prose prose-slate max-w-none">
+                          {msg.text}
+                        </div>
 
-                          {/* Render specification tables in responses */}
-                          {msg.tableData && (
-                            <div className="rounded-lg border border-slate-200 overflow-hidden bg-white mt-1 select-text shadow-sm">
-                              <table className="w-full text-left text-[10px] font-mono border-collapse">
-                                <thead>
-                                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
-                                    <th className="py-1 px-3">Specification Factor</th>
-                                    <th className="py-1 px-3 text-right">Value Rating</th>
+                        {/* Render specification tables in responses */}
+                        {msg.tableData && (
+                          <div className="rounded-lg border border-slate-200 overflow-hidden bg-white mt-1 select-text shadow-sm">
+                            <table className="w-full text-left text-[10px] font-mono border-collapse">
+                              <thead>
+                                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
+                                  <th className="py-1 px-3">Specification Factor</th>
+                                  <th className="py-1 px-3 text-right">Value Rating</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-100 text-slate-700">
+                                {msg.tableData.map((row, idx) => (
+                                  <tr key={idx}>
+                                    <td className="py-1 px-3">{row.label}</td>
+                                    <td className="py-1 px-3 text-right text-emerald-600 font-bold">{row.value}</td>
                                   </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100 text-slate-700">
-                                  {msg.tableData.map((row, idx) => (
-                                    <tr key={idx}>
-                                      <td className="py-1 px-3">{row.label}</td>
-                                      <td className="py-1 px-3 text-right text-emerald-600 font-bold">{row.value}</td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          )}
-                          <span className={`text-[8px] font-mono self-end ${msg.sender === "user" ? "text-blue-100" : "text-slate-400"}`}>{msg.timestamp}</span>
-                        </div>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                        <span className={`text-[8px] font-mono self-end ${msg.sender === "user" ? "text-blue-100" : "text-slate-400"}`}>{msg.timestamp}</span>
                       </div>
-                    ))}
-                    
-                    {isAiTyping && (
-                      <div className="flex gap-3 justify-start">
-                        <div className="h-7 w-7 rounded bg-orange-50 border border-orange-200 text-orange-600 flex items-center justify-center shrink-0">
-                          <Sparkles className="h-4 w-4 animate-spin" />
-                        </div>
-                        <div className="bg-white rounded-xl px-4 py-3 text-slate-500 italic border border-slate-200 shadow-sm">
-                          <span className="flex items-center gap-1">
-                            Analyzing mechanical loads & scanning structural photographs...
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Chat input box */}
-                  <div className="p-3 border-t border-slate-200 bg-slate-50/50 flex flex-col gap-2">
-                    
-                    {/* Uploaded image preview bar */}
-                    {uploadedImage && (
-                      <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 self-start text-[10px] text-slate-600 font-mono shadow-sm">
-                        <div className="h-8 w-8 rounded overflow-hidden border border-slate-100 bg-slate-50">
-                          <img src={uploadedImage} alt="Preview" className="object-cover h-full w-full" />
-                        </div>
-                        <span className="font-bold text-slate-700">Photo attached ready for Gemini scan</span>
-                        <button 
-                          type="button"
-                          onClick={() => setUploadedImage(null)}
-                          className="h-4.5 w-4.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-red-500 flex items-center justify-center font-bold text-[9px] ml-2 cursor-pointer border border-slate-100 bg-white shadow-sm"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    )}
-
-                    <form 
-                      onSubmit={(e) => {
-                        e.preventDefault()
-                        handleSendMessage()
-                      }}
-                      className="flex gap-2 items-center"
-                    >
-                      {/* Hidden file input */}
-                      <input 
-                        type="file"
-                        accept="image/*"
-                        id="chat-image-upload"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0]
-                          if (file) {
-                            const reader = new FileReader()
-                            reader.onloadend = () => {
-                              setUploadedImage(reader.result as string)
-                            }
-                            reader.readAsDataURL(file)
-                          }
-                        }}
-                      />
-
-                      <Button 
-                        type="button"
-                        onClick={() => document.getElementById("chat-image-upload")?.click()}
-                        className="bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-500 hover:text-[#0f2d59] rounded-lg h-9.5 w-9.5 shrink-0 p-0 flex items-center justify-center cursor-pointer shadow-sm"
-                        title="Upload component photograph"
-                      >
-                        <Image className="h-4.5 w-4.5" />
-                      </Button>
-
-                      <Input 
-                        placeholder="Ask about windloads, thermal limits, or upload a photograph..."
-                        value={chatInput}
-                        onChange={(e) => setChatInput(e.target.value)}
-                        className="text-xs bg-white border-slate-200 text-slate-800 rounded-lg h-9.5 focus:border-[#0f2d59] placeholder:text-slate-400 shadow-sm flex-1"
-                      />
-                      <Button 
-                        type="submit"
-                        className="bg-orange-600 hover:bg-orange-500 text-white rounded-lg h-9.5 px-4 cursor-pointer shadow-sm font-bold flex items-center gap-1 shrink-0"
-                      >
-                        <Send className="h-4 w-4" /> Send
-                      </Button>
-                    </form>
-                  </div>
-                </div>
-
-                {/* Pre-loaded help templates panel */}
-                <div className="lg:col-span-4 flex flex-col gap-3 h-full">
-                  <div className="bg-white p-4 rounded-2xl border border-slate-200 flex-1 flex flex-col shadow-sm">
-                    <h3 className="text-xs font-bold font-mono tracking-widest text-slate-500 uppercase border-b border-slate-100 pb-2 mb-3">Specification Templates</h3>
-                    <p className="text-[11px] text-slate-500 mb-4 leading-relaxed">Select a template below to simulate detailed engineering calculations for Cornerstone exterior components.</p>
-                    
-                    <div className="space-y-2 flex-1 overflow-y-auto custom-scrollbar">
-                      {PROMPT_HELPERS.map((helper) => (
-                        <Card 
-                          key={helper.title}
-                          onClick={() => handleSendMessage(helper.prompt)}
-                          className="p-3 border-slate-200 hover:border-orange-500/50 hover:bg-orange-50/20 bg-slate-50 cursor-pointer group transition-all shadow-sm"
-                        >
-                          <h4 className="text-[11.5px] font-extrabold text-slate-800 group-hover:text-orange-600 transition-colors">{helper.title}</h4>
-                          <p className="text-[10px] text-slate-500 mt-1 leading-normal line-clamp-2">{helper.prompt}</p>
-                          <span className="text-[9px] font-bold text-orange-600 group-hover:underline flex items-center gap-1.5 mt-2">
-                            {helper.short} <ArrowRight className="h-3 w-3" />
-                          </span>
-                        </Card>
-                      ))}
                     </div>
-                  </div>
+                  ))}
+                  
+                  {isAiTyping && (
+                    <div className="flex gap-3 justify-start">
+                      <div className="h-7 w-7 rounded bg-orange-50 border border-orange-200 text-orange-600 flex items-center justify-center shrink-0">
+                        <Sparkles className="h-4 w-4 animate-spin" />
+                      </div>
+                      <div className="bg-white rounded-xl px-4 py-3 text-slate-500 italic border border-slate-200 shadow-sm">
+                        <span className="flex items-center gap-1">
+                          Analyzing mechanical loads & scanning structural photographs...
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
+                {/* Chat input box */}
+                <div className="p-3 border-t border-slate-200 bg-slate-50/50 flex flex-col gap-1.5">
+                  
+                  {/* Uploaded image preview bar */}
+                  {uploadedImage && (
+                    <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 self-start text-[10px] text-slate-600 font-mono shadow-sm">
+                      <div className="h-8 w-8 rounded overflow-hidden border border-slate-100 bg-slate-50">
+                        <img src={uploadedImage} alt="Preview" className="object-cover h-full w-full" />
+                      </div>
+                      <span className="font-bold text-slate-700">Photo attached ready for Gemini scan</span>
+                      <button 
+                        type="button"
+                        onClick={() => setUploadedImage(null)}
+                        className="h-4.5 w-4.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-red-500 flex items-center justify-center font-bold text-[9px] ml-2 cursor-pointer border border-slate-100 bg-white shadow-sm"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
+
+                  <form 
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      handleSendMessage()
+                    }}
+                    className="flex gap-2 items-center"
+                  >
+                    {/* Hidden file input */}
+                    <input 
+                      type="file"
+                      accept="image/*"
+                      id="chat-image-upload"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const reader = new FileReader()
+                          reader.onloadend = () => {
+                            setUploadedImage(reader.result as string)
+                          }
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                    />
+
+                    <Button 
+                      type="button"
+                      onClick={() => document.getElementById("chat-image-upload")?.click()}
+                      className="bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-500 hover:text-[#0f2d59] rounded-lg h-9.5 w-9.5 shrink-0 p-0 flex items-center justify-center cursor-pointer shadow-sm"
+                      title="Upload component photograph"
+                    >
+                      <Image className="h-4.5 w-4.5" />
+                    </Button>
+
+                    <Input 
+                      placeholder="e.g., 'What is the wind load rating for Mastic Quest siding?' or upload a photo..."
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      className="text-xs bg-white border-slate-200 text-slate-800 rounded-lg h-9.5 focus:border-[#0f2d59] placeholder:text-slate-400 shadow-sm flex-1"
+                    />
+                    <Button 
+                      type="submit"
+                      className="bg-orange-600 hover:bg-orange-500 text-white rounded-lg h-9.5 px-4 cursor-pointer shadow-sm font-bold flex items-center gap-1 shrink-0"
+                    >
+                      <Send className="h-4 w-4" /> Send
+                    </Button>
+                  </form>
+                  <p className="text-[10px] text-slate-400 px-1 mt-0.5">
+                    💡 **Try asking:** <span className="italic text-slate-500">\"What is the thermal U-factor for Simonton DaylightMax?\"</span> or <span className="italic text-slate-500">\"Check purlin deflection for 30 psf snow load\"</span>, or attach a photo for a visual pattern scan.
+                  </p>
+                </div>
               </div>
             </TabsContent>
 
