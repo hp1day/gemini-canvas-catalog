@@ -1325,6 +1325,9 @@ export default function Home() {
   // STATE MANAGEMENT
   // ==========================================
   const [parts, setParts] = useState<Part[]>(INITIAL_PARTS)
+  const [gcsSyncing, setGcsSyncing] = useState<boolean>(true)
+  const [gcsError, setGcsError] = useState<string | null>(null)
+  const [showSplash, setShowSplash] = useState<boolean>(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [activeDivision, setActiveCategory] = useState<string>("all")
   const [sortBy, setSortBy] = useState<string>("name-asc")
@@ -1366,6 +1369,79 @@ export default function Home() {
   // Cloud Storage PDF Datasheet State
   const [pdfLoading, setPdfLoading] = useState(false)
   const [activePdfUrl, setActivePdfUrl] = useState<string | null>(null)
+
+  // CAD Canvas State
+  const [blueprintZoom, setBlueprintZoom] = useState<number>(1)
+  const [blueprintPan, setBlueprintPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const [showBlueprintGrid, setShowBlueprintGrid] = useState<boolean>(true)
+  const [showBlueprintAnnotations, setShowBlueprintAnnotations] = useState<boolean>(true)
+  const [isDraggingBlueprint, setIsDraggingBlueprint] = useState<boolean>(false)
+  const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+
+  // BOM Export / Quote Sheet State
+  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false)
+  const [contractorName, setContractorName] = useState<string>("Cornerstone Custom Contracting")
+  const [projectAddress, setProjectAddress] = useState<string>("100 Summit Ridge Blvd, Denver, CO 80201")
+  const [projectContact, setProjectContact] = useState<string>("specs@cornerstonecustom.com")
+
+  // Reset blueprint canvas view whenever the active selected part changes
+  useEffect(() => {
+    setBlueprintZoom(1)
+    setBlueprintPan({ x: 0, y: 0 })
+  }, [selectedPart])
+
+  // Load dynamic GCS parts from Cloud Storage on app mount
+  useEffect(() => {
+    const loadGcsParts = async () => {
+      try {
+        const res = await fetch(`/api/gcs-parts?t=${Date.now()}`)
+        const data = await res.json()
+        if (data.error) {
+          setGcsError(data.error)
+        } else if (data.parts && Array.isArray(data.parts)) {
+          // Map each part to its corresponding vector blueprint drawing
+          const mappedParts = data.parts.map((part: any) => {
+            let svgBlueprint = Blueprints.vinylSiding // default
+            
+            const lowerName = part.name.toLowerCase()
+            if (part.division === "windows") {
+              svgBlueprint = Blueprints.windowSash
+            } else if (part.division === "fencing") {
+              svgBlueprint = Blueprints.fencePost
+            } else if (part.division === "gutter") {
+              svgBlueprint = Blueprints.gutterHanger
+            } else if (lowerName.includes("stone")) {
+              svgBlueprint = Blueprints.stoneCorner
+            } else if (lowerName.includes("screw") || lowerName.includes("fasten") || lowerName.includes("cortex")) {
+              svgBlueprint = Blueprints.cortexScrew
+            } else if (lowerName.includes("trim") || lowerName.includes("metals") || lowerName.includes("flashing")) {
+              svgBlueprint = Blueprints.customFabricated
+            } else if (lowerName.includes("starter")) {
+              svgBlueprint = Blueprints.starterStrip
+            }
+
+            return {
+              ...part,
+              svgBlueprint
+            }
+          })
+          
+          // Merge dynamic GCS parts into parts catalog list
+          setParts(prev => {
+            const existingIds = new Set(prev.map(p => p.id))
+            const uniqueNew = mappedParts.filter((p: any) => !existingIds.has(p.id))
+            return [...prev, ...uniqueNew]
+          })
+        }
+      } catch (err: any) {
+        console.error("Failed to dynamically load parts from GCS back-end:", err)
+        setGcsError(err.message || "Failed to establish cloud sync connection")
+      } finally {
+        setGcsSyncing(false)
+      }
+    }
+    loadGcsParts()
+  }, [])
 
   const handleViewDatasheet = async (partId: string) => {
     setPdfLoading(true)
@@ -1557,6 +1633,232 @@ export default function Home() {
     setBom(prev => prev.map(item => item.part.id === partId ? { ...item, quantity } : item))
   }
 
+  // Download BOM as clean CSV spreadsheet
+  const downloadBomCsv = () => {
+    if (bom.length === 0) return
+    let csvContent = "data:text/csv;charset=utf-8," 
+      + "Part ID,Part Name,Division,Brand,Quantity,Unit Weight (lbs),Total Weight (lbs),Unit Cost (USD),Total Cost (USD)\n"
+    
+    bom.forEach(item => {
+      const totalWt = item.part.weight * item.quantity
+      const totalCst = item.part.cost * item.quantity
+      csvContent += `"${item.part.id}","${item.part.name.replace(/"/g, '""')}","${item.part.division}","${item.part.brand}",${item.quantity},${item.part.weight},${totalWt.toFixed(2)},${item.part.cost},${totalCst.toFixed(2)}\n`
+    })
+    
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement("a")
+    link.setAttribute("href", encodedUri)
+    link.setAttribute("download", `Cornerstone_BOM_Project_Quote_${new Date().toISOString().slice(0, 10)}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  // Render interactive 2D Cargo Load Visualizer
+  const renderCargoVisualizer = () => {
+    const weight = bomMetrics.totalWeight
+    let vehicleType: "courier" | "boxtruck" | "flatbed" | "semi" = "courier"
+    let maxWeight = 100
+    if (weight > 50 && weight <= 500) {
+      vehicleType = "boxtruck"
+      maxWeight = 1000
+    } else if (weight > 500 && weight <= 4000) {
+      vehicleType = "flatbed"
+      maxWeight = 5000
+    } else if (weight > 4000) {
+      vehicleType = "semi"
+      maxWeight = 25000
+    }
+    
+    const pct = Math.min((weight / maxWeight) * 100, 100)
+    
+    return (
+      <div className="bg-slate-900 text-slate-100 p-3 rounded-xl border border-slate-800 shadow-inner flex flex-col gap-2 mt-2 no-print">
+        <div className="flex items-center justify-between text-[9px] font-mono font-bold tracking-wider text-orange-400">
+          <span>ACTIVE CARGO CAPACITY VISUALIZER</span>
+          <span>LOAD: {pct.toFixed(0)}%</span>
+        </div>
+        
+        {/* 2D Vector Cargo Bay and Vehicle */}
+        <div className="h-16 w-full flex items-end justify-center bg-slate-950 rounded-lg p-1.5 relative border border-slate-800/80 overflow-hidden">
+          {/* Draw the specific vehicle profile path */}
+          <svg viewBox="0 0 200 50" className="w-full h-full stroke-slate-500 fill-none" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* Ground Line */}
+            <line x1="5" y1="42" x2="195" y2="42" stroke="rgba(71, 85, 105, 0.4)" strokeDasharray="2 2" />
+            
+            {vehicleType === "courier" && (
+              <g>
+                {/* Delivery Courier Van Profile */}
+                <path d="M 45 42 L 55 42 Q 57 42, 57 37 Q 57 35, 63 35 L 75 35 Q 85 35, 90 28 L 105 28 Q 110 28, 112 32 L 115 37 L 115 42 L 155 42 Q 158 42, 158 39 L 158 18 Q 158 15, 155 15 L 65 15 Q 60 15, 60 18 L 45 35 Z" className="stroke-slate-600 fill-slate-800/20" />
+                {/* Wheels */}
+                <circle cx="70" cy="42" r="5" className="stroke-slate-400 fill-slate-900" strokeWidth="1.5" />
+                <circle cx="70" cy="42" r="2" className="fill-slate-400" />
+                <circle cx="130" cy="42" r="5" className="stroke-slate-400 fill-slate-900" strokeWidth="1.5" />
+                <circle cx="130" cy="42" r="2" className="fill-slate-400" />
+                {/* Cargo Bay Area inside van */}
+                <rect x="78" y="18" width="72" height="20" rx="1" className="stroke-orange-500/20 fill-orange-500/5" strokeDasharray="1.5 1.5" />
+                {/* Render items as tiny filled blocks inside Cargo Bay */}
+                <g className="fill-orange-400/80 stroke-orange-300/40" strokeWidth="0.5">
+                  {bom.map((item, idx) => {
+                    const blockWidth = Math.min(item.quantity * 1.5, 30);
+                    const blockHeight = 8;
+                    const xOffset = 80 + (idx * 16) % 55;
+                    const yOffset = 30 - (Math.floor(idx / 3) * 9);
+                    if (yOffset > 18) {
+                      return <rect key={item.part.id} x={xOffset} y={yOffset} width={blockWidth} height={blockHeight} rx="0.5" />;
+                    }
+                    return null;
+                  })}
+                </g>
+              </g>
+            )}
+
+            {vehicleType === "boxtruck" && (
+              <g>
+                {/* Box Truck Profile */}
+                {/* Cab */}
+                <path d="M 25 42 L 45 42 L 45 22 L 35 22 L 28 32 L 25 35 Z" className="stroke-slate-600 fill-slate-800/20" />
+                {/* Cargo Box */}
+                <rect x="48" y="12" width="125" height="30" rx="1.5" className="stroke-slate-600 fill-slate-800/10" />
+                {/* Wheels */}
+                <circle cx="35" cy="42" r="6" className="stroke-slate-400 fill-slate-900" strokeWidth="1.5" />
+                <circle cx="35" cy="42" r="2" className="fill-slate-400" />
+                <circle cx="120" cy="42" r="6" className="stroke-slate-400 fill-slate-900" strokeWidth="1.5" />
+                <circle cx="120" cy="42" r="2" className="fill-slate-400" />
+                <circle cx="134" cy="42" r="6" className="stroke-slate-400 fill-slate-900" strokeWidth="1.5" />
+                <circle cx="134" cy="42" r="2" className="fill-slate-400" />
+                
+                {/* Cargo Bay Area Inside Box */}
+                <rect x="52" y="15" width="117" height="24" rx="1" className="stroke-cyan-500/20 fill-cyan-500/5" strokeDasharray="1.5 1.5" />
+                {/* Dynamic Stacked cargo boxes inside bay */}
+                <g strokeWidth="0.5">
+                  {bom.map((item, idx) => {
+                    // Color code by division
+                    const colors = 
+                      item.part.division === "siding" ? "fill-blue-500/75 stroke-blue-300/60" :
+                      item.part.division === "windows" ? "fill-sky-500/75 stroke-sky-300/60" :
+                      item.part.division === "metal" ? "fill-orange-500/75 stroke-orange-300/60" :
+                      item.part.division === "custom" ? "fill-purple-500/75 stroke-purple-300/60" :
+                      "fill-amber-500/75 stroke-amber-300/60";
+                      
+                    const blockWidth = Math.min(item.quantity * 2, 45);
+                    const blockHeight = 10;
+                    const xOffset = 55 + (idx * 28) % 85;
+                    const yOffset = 27 - (Math.floor(idx / 3) * 11);
+                    if (yOffset > 13) {
+                      return <rect key={item.part.id} x={xOffset} y={yOffset} width={blockWidth} height={blockHeight} rx="0.5" className={colors} />;
+                    }
+                    return null;
+                  })}
+                </g>
+              </g>
+            )}
+
+            {vehicleType === "flatbed" && (
+              <g>
+                {/* Medium flatbed truck */}
+                {/* Cab */}
+                <path d="M 15 42 L 35 42 L 35 24 L 28 24 L 20 32 L 15 35 Z" className="stroke-slate-600 fill-slate-800/20" />
+                {/* Flatbed bed */}
+                <line x1="35" y1="36" x2="185" y2="36" strokeWidth="2.5" className="stroke-slate-600" />
+                <line x1="185" y1="36" x2="185" y2="42" className="stroke-slate-600" />
+                {/* Wheels */}
+                <circle cx="26" cy="42" r="5.5" className="stroke-slate-400 fill-slate-900" strokeWidth="1.5" />
+                <circle cx="26" cy="42" r="2.2" className="fill-slate-400" />
+                <circle cx="120" cy="42" r="5.5" className="stroke-slate-400 fill-slate-900" strokeWidth="1.5" />
+                <circle cx="120" cy="42" r="2.2" className="fill-slate-400" />
+                <circle cx="132" cy="42" r="5.5" className="stroke-slate-400 fill-slate-900" strokeWidth="1.5" />
+                <circle cx="132" cy="42" r="2.2" className="fill-slate-400" />
+                <circle cx="144" cy="42" r="5.5" className="stroke-slate-400 fill-slate-900" strokeWidth="1.5" />
+                <circle cx="144" cy="42" r="2.2" className="fill-slate-400" />
+                
+                {/* Stacked building pallets on the flatbed bed */}
+                <g strokeWidth="0.5" className="stroke-slate-300/40">
+                  {bom.map((item, idx) => {
+                    const colors = 
+                      item.part.division === "siding" ? "fill-blue-500/70" :
+                      item.part.division === "windows" ? "fill-sky-500/70" :
+                      item.part.division === "metal" ? "fill-orange-500/70" :
+                      item.part.division === "custom" ? "fill-purple-500/70" :
+                      "fill-amber-500/70";
+                      
+                    const blockWidth = Math.min(item.quantity * 2.5, 50);
+                    const blockHeight = 12;
+                    const xOffset = 38 + (idx * 38) % 115;
+                    const yOffset = 24 - (Math.floor(idx / 3) * 13);
+                    if (yOffset > 5) {
+                      return (
+                        <g key={item.part.id}>
+                          <rect x={xOffset} y={yOffset} width={blockWidth} height={blockHeight} rx="0.5" className={colors} />
+                          {/* Straps/Bindings holding cargo */}
+                          <line x1={xOffset + blockWidth/2} y1={yOffset} x2={xOffset + blockWidth/2} y2={35} stroke="rgba(255,255,255,0.4)" strokeWidth="0.5" />
+                        </g>
+                      )
+                    }
+                    return null;
+                  })}
+                </g>
+              </g>
+            )}
+
+            {vehicleType === "semi" && (
+              <g>
+                {/* Semi Class 8 Tractor Trailer */}
+                {/* Tractor/Cab */}
+                <path d="M 10 42 L 35 42 L 35 18 L 28 18 Q 24 18, 24 25 L 14 30 L 10 33 Z" className="stroke-slate-600 fill-slate-800/25" strokeWidth="1.2" />
+                <circle cx="16" cy="42" r="5" className="stroke-slate-400 fill-slate-900" strokeWidth="1.2" />
+                <circle cx="28" cy="42" r="5" className="stroke-slate-400 fill-slate-900" strokeWidth="1.2" />
+                
+                {/* Long Trailer Container */}
+                <rect x="38" y="10" width="155" height="32" rx="2" className="stroke-slate-600 fill-slate-800/10" strokeWidth="1.2" />
+                {/* Trailer Double-Axles */}
+                <circle cx="162" cy="42" r="5" className="stroke-slate-400 fill-slate-900" strokeWidth="1.2" />
+                <circle cx="173" cy="42" r="5" className="stroke-slate-400 fill-slate-900" strokeWidth="1.2" />
+                
+                {/* Cargo Bay Area inside Trailer */}
+                <rect x="42" y="13" width="147" height="26" rx="1.5" className="stroke-indigo-500/20 fill-indigo-500/5" strokeDasharray="1.5 1.5" />
+                {/* Visual pallet racks inside semi trailer container */}
+                <g strokeWidth="0.5">
+                  {bom.map((item, idx) => {
+                    const colors = 
+                      item.part.division === "siding" ? "fill-blue-500/75 stroke-blue-300/50" :
+                      item.part.division === "windows" ? "fill-sky-500/75 stroke-sky-300/50" :
+                      item.part.division === "metal" ? "fill-orange-500/75 stroke-orange-300/50" :
+                      item.part.division === "custom" ? "fill-purple-500/75 stroke-purple-300/50" :
+                      "fill-amber-500/75 stroke-amber-300/50";
+                      
+                    const blockWidth = Math.min(item.quantity * 2.5, 60);
+                    const blockHeight = 11;
+                    const xOffset = 45 + (idx * 34) % 120;
+                    const yOffset = 26 - (Math.floor(idx / 4) * 12);
+                    if (yOffset > 12) {
+                      return <rect key={item.part.id} x={xOffset} y={yOffset} width={blockWidth} height={blockHeight} rx="0.5" className={colors} />;
+                    }
+                    return null;
+                  })}
+                </g>
+              </g>
+            )}
+          </svg>
+        </div>
+        
+        {/* Legend & Details */}
+        <div className="flex flex-wrap items-center justify-between gap-1 px-1 text-[8px] font-mono text-slate-400">
+          <div className="flex items-center gap-1">
+            <span className="h-1.5 w-1.5 rounded bg-blue-500" /> <span>Siding</span>
+            <span className="h-1.5 w-1.5 rounded bg-sky-500 ml-1" /> <span>Windows</span>
+            <span className="h-1.5 w-1.5 rounded bg-orange-500 ml-1" /> <span>Metal</span>
+            <span className="h-1.5 w-1.5 rounded bg-purple-500 ml-1" /> <span>Custom</span>
+            <span className="h-1.5 w-1.5 rounded bg-amber-500 ml-1" /> <span>Fasteners</span>
+          </div>
+          <div className="text-orange-400 font-bold">
+            MAX WT: {maxWeight.toLocaleString()} LBS
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // Real-time Vertex AI Grounded Chat integration
   const handleSendMessage = async (textToSend?: string, attachedImg?: string) => {
     const query = textToSend || chatInput
@@ -1687,6 +1989,72 @@ export default function Home() {
     "Performing digital laser scan of profile cross-section. Deviation: <0.012mm (QUALITY PASSED)."
   ]
 
+  if (showSplash) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#08152e] text-white relative overflow-hidden font-sans">
+        {/* Background glow effects */}
+        <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] bg-blue-500/10 blur-[150px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-orange-500/10 blur-[150px] rounded-full pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-40" />
+
+        {/* Splash Card */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="z-10 max-w-2xl text-center px-6 flex flex-col items-center"
+        >
+          {/* Logo Animation */}
+          <div className="relative mb-8">
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-orange-500 blur-xl opacity-55 animate-pulse" />
+            <div className="relative h-20 w-20 rounded-3xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-orange-500 p-0.5 shadow-2xl flex items-center justify-center">
+              <div className="h-full w-full rounded-[22px] bg-[#0f2d59] flex items-center justify-center">
+                <Building2 className="h-10 w-10 text-orange-400" />
+              </div>
+            </div>
+          </div>
+
+          {/* Brand name */}
+          <h2 className="text-[11px] font-extrabold tracking-[0.25em] text-orange-400 uppercase font-mono mb-2">Architectural Engineering Platform</h2>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-6 leading-tight">
+            CORNERSTONE <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-orange-300">PARTS LIBRARY</span>
+          </h1>
+
+          <p className="text-slate-300 text-sm md:text-base mb-10 max-w-lg leading-relaxed">
+            Access real-time engineering blueprints, design custom fabricated flashing, and compile professional Bills of Materials grounded in secure Cloud Storage specifications.
+          </p>
+
+          {/* Actions */}
+          <button 
+            onClick={() => setShowSplash(false)}
+            className="relative group cursor-pointer"
+          >
+            <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-blue-500 to-orange-500 blur-md opacity-75 group-hover:opacity-100 transition duration-300" />
+            <div className="relative px-8 py-4 bg-gradient-to-r from-blue-600 to-[#0f2d59] hover:from-blue-500 hover:to-[#174384] text-white font-extrabold text-sm tracking-wide rounded-xl shadow-2xl transition duration-300 flex items-center gap-3 border border-blue-400/20">
+              Launch Spec Workspace
+              <ArrowRight className="h-4 w-4 text-orange-300 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </button>
+
+          {/* Cloud storage connection specs footer */}
+          <div className="mt-16 pt-8 border-t border-slate-800 w-full flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-400 font-mono">
+             <div className="flex items-center gap-2">
+               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+               <span>Database Server: <strong>Online</strong></span>
+             </div>
+             <div className="flex items-center gap-2">
+               <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+               <span>Bucket: <code>gs://conerstonepartlib</code></span>
+             </div>
+             <div className="flex items-center gap-2">
+               <span>Core Engine: <strong>v7.0 (Turbopack)</strong></span>
+             </div>
+          </div>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col flex-1 bg-[#f8fafc] text-slate-900 font-sans min-h-screen relative overflow-hidden">
       {/* Premium background grid & light glow effects */}
@@ -1699,12 +2067,10 @@ export default function Home() {
           ========================================== */}
       <header className="sticky top-0 z-30 bg-[#0f2d59] text-white shadow-md border-b border-[#0b2447] px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <a 
-            href="https://www.cornerstonebuildingbrands.com" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="flex items-center gap-3 hover:opacity-90 transition-opacity"
-            title="Visit Cornerstone Building Brands website"
+          <button 
+            onClick={() => setShowSplash(true)}
+            className="flex items-center gap-3 hover:opacity-90 transition-opacity text-left cursor-pointer focus:outline-none"
+            title="Return to Welcome Splash Screen"
           >
             <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-orange-500 p-0.5 shadow-lg flex items-center justify-center">
               <div className="h-full w-full rounded-[10px] bg-[#0f2d59] flex items-center justify-center">
@@ -1717,7 +2083,7 @@ export default function Home() {
               </h1>
               <p className="text-[9px] text-slate-300 uppercase tracking-widest font-mono font-bold">North American Exterior Cladding Database</p>
             </div>
-          </a>
+          </button>
         </div>
 
         {/* Live BOM Metrics counter */}
@@ -1831,6 +2197,19 @@ export default function Home() {
             {/* TAB 1: PRODUCT CATALOG GRID */}
             <TabsContent value="parts" className="mt-0 focus-visible:ring-0 focus-visible:outline-none">
               
+              {gcsError && (
+                <div className="mb-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium flex items-start gap-2.5 shadow-sm">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-800 font-extrabold text-xs">!</span>
+                  <div>
+                    <div className="font-extrabold text-rose-900">Cloud Storage Connection Warning</div>
+                    <div className="text-[11px] text-rose-700/90 mt-0.5 leading-relaxed">
+                      Failed to dynamically fetch live parts from Cloud Storage: <strong>{gcsError}</strong>.
+                      Please ensure your local shell has active Application Default Credentials (ADC) or credentials with read permissions for bucket <code>gs://conerstonepartlib</code>.
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               {/* Category Segment Selectors */}
               <div className="flex flex-wrap gap-2 mb-5">
                 {[
@@ -1858,8 +2237,21 @@ export default function Home() {
               </div>
 
               {/* Sort by selector */}
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-3 px-1">
-                <span>Displaying <strong>{filteredParts.length}</strong> matching building parts</span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-500 mb-3 px-1">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span>Displaying <strong>{filteredParts.length}</strong> matching building parts</span>
+                  {gcsSyncing ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 font-semibold animate-pulse">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                      Syncing gs://conerstonepartlib...
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100 font-semibold">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                      Live gs://conerstonepartlib
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center gap-2">
                   <Filter className="h-3 w-3 text-slate-400" />
                   <span>Sort:</span>
@@ -2366,8 +2758,28 @@ export default function Home() {
                 </div>
 
                 {/* Chat input box */}
-                <div className="p-3 border-t border-slate-200 bg-slate-50/50 flex flex-col gap-1.5">
+                <div className="p-3 border-t border-slate-200 bg-slate-50/50 flex flex-col gap-2">
                   
+                  {/* Quick Prompt Presets */}
+                  <div className="flex items-center gap-1.5 pb-1 max-w-full overflow-x-auto custom-scrollbar no-print">
+                    <span className="text-[9px] font-mono font-extrabold text-slate-400 uppercase tracking-wider select-none">Presets:</span>
+                    {[
+                      { label: "Window U-Factors", query: "Can you list and compare the thermal U-factor ratings of all the Simonton and builder series windows in our catalog in a markdown table?" },
+                      { label: "Siding Wind Loads", query: "What are the structural wind-load capacities and wind-resistance ratings for Ply Gem and Mastic vinyl siding panels?" },
+                      { label: "Snow Load Limits", query: "Calculate standard span deflection limits for MBCI and Metl-Span metal roofing panels under a 30 psf snow load." },
+                      { label: "Warranty Summaries", query: "What are the standard structural and color fade warranty coverage periods across Ply Gem, Simonton, and Mastic systems?" }
+                    ].map((preset, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleSendMessage(preset.query)}
+                        className="text-[10px] font-semibold px-2.5 py-1 bg-[#fff2ea] hover:bg-orange-600 border border-orange-200 text-orange-800 hover:text-white rounded-full cursor-pointer transition-all duration-200 shadow-sm shrink-0 whitespace-nowrap active:scale-95 flex items-center gap-1"
+                      >
+                        💡 {preset.label}
+                      </button>
+                    ))}
+                  </div>
+
                   {/* Uploaded image preview bar */}
                   {uploadedImage && (
                     <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 self-start text-[10px] text-slate-600 font-mono shadow-sm">
@@ -2464,6 +2876,103 @@ export default function Home() {
                 </div>
 
                 <h4 className="text-sm font-extrabold text-slate-800 leading-snug">{selectedPart.name}</h4>
+
+                {/* Interactive CAD Canvas Card */}
+                <div className="mt-3 mb-1 bg-[#09172c] border border-[#1e2d44] rounded-xl overflow-hidden shadow-inner relative select-none">
+                  <div className="h-44 w-full flex items-center justify-center relative overflow-hidden"
+                       onMouseDown={(e) => {
+                         setIsDraggingBlueprint(true);
+                         setDragStart({ x: e.clientX - blueprintPan.x, y: e.clientY - blueprintPan.y });
+                       }}
+                       onMouseMove={(e) => {
+                         if (isDraggingBlueprint) {
+                           setBlueprintPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+                         }
+                       }}
+                       onMouseUp={() => setIsDraggingBlueprint(false)}
+                       onMouseLeave={() => setIsDraggingBlueprint(false)}
+                       style={{ cursor: isDraggingBlueprint ? 'grabbing' : 'grab' }}
+                  >
+                    {/* Grid Background */}
+                    {showBlueprintGrid && (
+                      <div className="absolute inset-0 pointer-events-none opacity-25" style={{
+                        backgroundImage: 'radial-gradient(rgba(34, 211, 238, 0.4) 1px, transparent 1px)',
+                        backgroundSize: '12px 12px'
+                      }} />
+                    )}
+                    
+                    {/* Canvas Content */}
+                    <div 
+                      className={`h-full w-full p-4 select-none ${showBlueprintAnnotations ? "" : "[&_text]:hidden [&_line]:hidden [&_ellipse]:hidden [&_rect]:hidden [&_path]:opacity-100"}`}
+                      style={{
+                        transform: `scale(${blueprintZoom}) translate(${blueprintPan.x}px, ${blueprintPan.y}px)`,
+                        transformOrigin: 'center',
+                        transition: isDraggingBlueprint ? 'none' : 'transform 0.15s ease'
+                      }}
+                    >
+                      {selectedPart.svgBlueprint}
+                    </div>
+
+                    {/* Canvas Info Badge */}
+                    <div className="absolute bottom-2 left-2 bg-slate-950/80 border border-slate-800 backdrop-blur-sm px-2 py-0.5 rounded text-[8px] font-mono font-semibold tracking-wider text-cyan-400">
+                      SCALE: {(blueprintZoom * 100).toFixed(0)}% | PAN: {blueprintPan.x.toFixed(0)},{blueprintPan.y.toFixed(0)} px
+                    </div>
+                  </div>
+
+                  {/* Canvas Control Bar */}
+                  <div className="bg-[#0b1f38] border-t border-[#1e2d44] px-3 py-1.5 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        onClick={() => setBlueprintZoom(z => Math.min(z + 0.1, 3.0))}
+                        className="h-6 w-6 rounded bg-[#09172c] hover:bg-[#152a44] border border-[#1e2d44] text-cyan-400 hover:text-cyan-300 flex items-center justify-center p-0"
+                        title="Zoom In"
+                      >
+                        <span className="font-bold text-xs">+</span>
+                      </Button>
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        onClick={() => setBlueprintZoom(z => Math.max(z - 0.1, 0.5))}
+                        className="h-6 w-6 rounded bg-[#09172c] hover:bg-[#152a44] border border-[#1e2d44] text-cyan-400 hover:text-cyan-300 flex items-center justify-center p-0"
+                        title="Zoom Out"
+                      >
+                        <span className="font-bold text-xs">-</span>
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        onClick={() => { setBlueprintZoom(1); setBlueprintPan({ x: 0, y: 0 }); }}
+                        className="h-6 px-2 rounded bg-[#09172c] hover:bg-[#152a44] border border-[#1e2d44] text-[9px] font-mono font-semibold text-cyan-400 hover:text-cyan-300"
+                        title="Reset Canvas"
+                      >
+                        RESET
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <label className="flex items-center gap-1 text-[9px] font-mono text-slate-400 cursor-pointer select-none">
+                        <input 
+                          type="checkbox" 
+                          checked={showBlueprintGrid} 
+                          onChange={(e) => setShowBlueprintGrid(e.target.checked)}
+                          className="rounded border-[#1e2d44] bg-[#09172c] text-cyan-500 focus:ring-0 h-3 w-3 cursor-pointer"
+                        />
+                        <span>GRID</span>
+                      </label>
+                      <label className="flex items-center gap-1 text-[9px] font-mono text-slate-400 cursor-pointer select-none">
+                        <input 
+                          type="checkbox" 
+                          checked={showBlueprintAnnotations} 
+                          onChange={(e) => setShowBlueprintAnnotations(e.target.checked)}
+                          className="rounded border-[#1e2d44] bg-[#09172c] text-cyan-500 focus:ring-0 h-3 w-3 cursor-pointer"
+                        />
+                        <span>SPECS</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
                 <div className="text-[11px] text-slate-600 leading-relaxed mt-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
                   <MarkdownRenderer text={selectedPart.description} />
                 </div>
@@ -2694,6 +3203,9 @@ export default function Home() {
                   </div>
                 </div>
 
+                {/* Cargo Load Visualizer */}
+                {renderCargoVisualizer()}
+
                 <div className="space-y-1.5 text-xs text-slate-500 pt-1 font-mono">
                   <div className="flex justify-between">
                     <span>Total components count:</span>
@@ -2709,14 +3221,20 @@ export default function Home() {
                   </div>
                 </div>
 
-                <Button 
-                  onClick={() => {
-                    alert(`Finalizing specification list. Generated comprehensive Excel BOM and certified CAD export for ${bomMetrics.activeComponentsCount} components. Preparing shipment forecast via ${bomMetrics.logisticsType}.`)
-                  }}
-                  className="w-full bg-orange-600 hover:bg-orange-500 text-white font-extrabold h-9 rounded-lg text-xs tracking-wider uppercase cursor-pointer shadow-md shadow-orange-600/10"
-                >
-                  Generate CAD & Spec Quote
-                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    onClick={downloadBomCsv}
+                    className="bg-slate-200 hover:bg-slate-300 text-slate-700 border border-slate-300 font-extrabold h-9 rounded-lg text-xs cursor-pointer flex items-center justify-center gap-1 shadow-sm"
+                  >
+                    <Download className="h-3.5 w-3.5" /> Download CSV
+                  </Button>
+                  <Button 
+                    onClick={() => setIsExportModalOpen(true)}
+                    className="bg-orange-600 hover:bg-orange-500 text-white font-extrabold h-9 rounded-lg text-xs tracking-wider uppercase cursor-pointer shadow-md shadow-orange-600/10 flex items-center justify-center gap-1"
+                  >
+                    <FileText className="h-3.5 w-3.5" /> Print Quote
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -2745,7 +3263,7 @@ export default function Home() {
                   </div>
                   <button 
                     onClick={() => setActivePdfUrl(null)}
-                    className="text-slate-400 hover:text-white font-bold text-lg cursor-pointer"
+                    className="text-slate-400 hover:text-white font-bold text-lg cursor-pointer animate-in fade-in"
                   >
                     ✕
                   </button>
@@ -2756,6 +3274,206 @@ export default function Home() {
                     className="w-full h-full border-none" 
                     title="Ply Gem Engineering Datasheet"
                   />
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {isExportModalOpen && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
+            >
+              {/* Inject standard print-media override CSS */}
+              <style dangerouslySetInnerHTML={{__html: `
+                @media print {
+                  body {
+                    background: white !important;
+                    color: black !important;
+                  }
+                  header, footer, nav, aside, section, main, button, .no-print {
+                    display: none !important;
+                  }
+                  #print-quote-sheet {
+                    display: block !important;
+                    position: absolute !important;
+                    left: 0 !important;
+                    top: 0 !important;
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    box-shadow: none !important;
+                    border: none !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    background: white !important;
+                    color: black !important;
+                  }
+                }
+              `}} />
+
+              <motion.div 
+                initial={{ scale: 0.95, y: 25 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.95, y: 25 }}
+                className="bg-white rounded-3xl w-full max-w-4xl max-h-[92vh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden no-print"
+              >
+                {/* Modal Header */}
+                <div className="bg-[#0f2d59] text-white px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#081f3c]">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-orange-400" />
+                    <div>
+                      <h3 className="font-extrabold tracking-wide text-sm">Commercial Material Estimate & Quote</h3>
+                      <p className="text-[10px] text-slate-300 font-mono">ESTIMATE ID: CBB-2026-90412</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Button 
+                      onClick={() => window.print()}
+                      className="bg-orange-600 hover:bg-orange-500 text-white font-extrabold h-9 px-4 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-md shadow-orange-600/10"
+                    >
+                      <Download className="h-3.5 w-3.5" /> Print / Save PDF
+                    </Button>
+                    <button 
+                      onClick={() => setIsExportModalOpen(false)}
+                      className="text-slate-300 hover:text-white font-bold text-xl cursor-pointer p-1 rounded-lg hover:bg-white/10 transition-colors"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+
+                {/* Modal Body / Scrollable Quote Preview and Inputs */}
+                <div className="flex-1 overflow-y-auto p-8 bg-slate-100 flex flex-col md:flex-row gap-6 custom-scrollbar">
+                  
+                  {/* Left Column: Client & Project Configuration Inputs */}
+                  <div className="w-full md:w-80 bg-white rounded-2xl border border-slate-200 p-5 space-y-4 shrink-0 shadow-sm h-fit">
+                    <h4 className="text-xs font-bold font-mono tracking-widest text-slate-400 uppercase border-b border-slate-100 pb-1.5 mb-2">Quote Info Settings</h4>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-mono text-slate-400 uppercase font-semibold">Contractor / Client Name</label>
+                      <Input 
+                        value={contractorName} 
+                        onChange={(e) => setContractorName(e.target.value)}
+                        className="text-xs border-slate-200 bg-slate-50/50"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-mono text-slate-400 uppercase font-semibold">Project Delivery Address</label>
+                      <Input 
+                        value={projectAddress} 
+                        onChange={(e) => setProjectAddress(e.target.value)}
+                        className="text-xs border-slate-200 bg-slate-50/50"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-mono text-slate-400 uppercase font-semibold">Contact Email / Phone</label>
+                      <Input 
+                        value={projectContact} 
+                        onChange={(e) => setProjectContact(e.target.value)}
+                        className="text-xs border-slate-200 bg-slate-50/50"
+                      />
+                    </div>
+                    <div className="pt-3 border-t border-slate-100 text-[10px] text-slate-400 leading-normal bg-orange-50/50 p-3 rounded-lg border border-orange-100">
+                      💡 **Tip:** Changes made to these fields instantly update the print sheet to the right! Print to save as a professional PDF.
+                    </div>
+                  </div>
+
+                  {/* Right Column / Printable Area Preview */}
+                  <div className="flex-1 bg-white border border-slate-200 shadow-lg rounded-2xl p-8 max-w-[680px] mx-auto overflow-y-auto" id="print-quote-sheet">
+                    
+                    {/* Invoice/Quote Header */}
+                    <div className="flex justify-between items-start gap-4 border-b-2 border-slate-900 pb-6">
+                      <div>
+                        <h2 className="text-xl font-extrabold tracking-wide text-slate-900">CORNERSTONE BUILDING BRANDS</h2>
+                        <p className="text-[9px] text-slate-500 uppercase tracking-wider font-mono font-bold">North American Exterior Cladding Supplier</p>
+                        <p className="text-[10px] text-slate-600 mt-1 leading-normal">
+                          5015 Oak Forest Dr, Houston, TX 77092<br />
+                          orders@cornerstonebuildingbrands.com
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="inline-block px-3 py-1 bg-slate-900 text-white font-extrabold text-[10px] tracking-widest uppercase rounded">MATERIAL ESTIMATE</div>
+                        <p className="text-xs font-mono font-bold text-slate-700 mt-2">QUOTE #: CBB-2026-90412</p>
+                        <p className="text-[10px] text-slate-500 font-mono mt-0.5">DATE: {new Date().toLocaleDateString()}</p>
+                      </div>
+                    </div>
+
+                    {/* Client & Shipping Metadata Row */}
+                    <div className="grid grid-cols-2 gap-6 py-6 text-xs">
+                      <div>
+                        <h4 className="text-[9px] font-mono font-extrabold text-slate-400 uppercase tracking-widest mb-1.5">QUOTE ISSUED TO:</h4>
+                        <strong className="text-slate-800 font-extrabold text-xs block">{contractorName}</strong>
+                        <p className="text-slate-600 mt-1 leading-normal">{projectAddress}</p>
+                        <p className="text-slate-500 font-mono text-[10px] mt-0.5">{projectContact}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-[9px] font-mono font-extrabold text-slate-400 uppercase tracking-widest mb-1.5">SHIPPING LOGISTICS PREDICTION:</h4>
+                        <strong className="text-slate-800 font-extrabold text-xs block">{bomMetrics.logisticsType}</strong>
+                        <p className="text-slate-500 mt-1 leading-normal">{bomMetrics.logisticsDesc}</p>
+                        <p className="text-[10px] font-mono text-slate-600 mt-1 font-semibold">EST. WEIGHT: <span className="text-slate-800 font-bold">{bomMetrics.totalWeight.toFixed(1)} lbs</span></p>
+                      </div>
+                    </div>
+
+                    {/* Itemized Materials Table */}
+                    <table className="w-full text-xs mt-4">
+                      <thead>
+                        <tr className="border-b border-slate-900 text-[10px] font-mono font-extrabold text-slate-500 uppercase text-left">
+                          <th className="py-2 pr-2">PART ID</th>
+                          <th className="py-2 pr-2">DESCRIPTION</th>
+                          <th className="py-2 pr-2">BRAND</th>
+                          <th className="py-2 pr-2 text-center">QTY</th>
+                          <th className="py-2 pr-2 text-right">UNIT WT</th>
+                          <th className="py-2 pr-2 text-right">UNIT PRICE</th>
+                          <th className="py-2 text-right">TOTAL</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {bom.map((item) => (
+                          <tr key={item.part.id} className="text-slate-700">
+                            <td className="py-2.5 font-mono text-[10px] font-bold text-slate-900">#{item.part.id}</td>
+                            <td className="py-2.5 pr-2">
+                              <span className="font-bold text-slate-900 block leading-tight">{item.part.name}</span>
+                              <span className="text-[9px] text-slate-400 block leading-normal mt-0.5">{item.part.material} | {item.part.finish}</span>
+                            </td>
+                            <td className="py-2.5 text-slate-600 font-medium">{item.part.brand}</td>
+                            <td className="py-2.5 text-center font-bold text-slate-900">{item.quantity}</td>
+                            <td className="py-2.5 text-right font-mono text-[10px]">{item.part.weight} lbs</td>
+                            <td className="py-2.5 text-right font-mono text-[10px]">${item.part.cost.toFixed(2)}</td>
+                            <td className="py-2.5 text-right font-mono font-bold text-slate-950">${(item.part.cost * item.quantity).toFixed(2)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                    {/* Summary Totals Footer */}
+                    <div className="border-t border-slate-300 mt-6 pt-4 flex flex-col items-end gap-1.5 text-xs text-slate-600">
+                      <div className="flex justify-between w-64">
+                        <span>Total Items:</span>
+                        <strong className="text-slate-800 font-bold">{bomMetrics.activeComponentsCount} pcs</strong>
+                      </div>
+                      <div className="flex justify-between w-64">
+                        <span>Total Cargo Weight:</span>
+                        <strong className="text-slate-800 font-bold">{bomMetrics.totalWeight.toFixed(1)} lbs</strong>
+                      </div>
+                      <div className="flex justify-between w-64 border-t-2 border-slate-900 pt-2 text-sm text-slate-900">
+                        <span className="font-extrabold">ESTIMATED MATERIALS COST:</span>
+                        <strong className="text-slate-950 font-extrabold">${bomMetrics.totalCost.toFixed(2)} USD</strong>
+                      </div>
+                    </div>
+
+                    {/* Standard Terms and Sign-off */}
+                    <div className="border-t border-slate-200 mt-12 pt-6 text-[9px] text-slate-400 leading-normal space-y-2">
+                      <p>
+                        **Disclaimer:** This estimate is synthesized for architectural modeling purposes only. Ultimate wind-load, structural dead load, thermal deflection limits, and building code compliances must be certified by a licensed structural engineer in the target jurisdiction.
+                      </p>
+                      <p className="text-center font-mono font-bold tracking-wider uppercase pt-4">
+                        THANK YOU FOR CHOOSING CORNERSTONE BUILDING BRANDS
+                      </p>
+                    </div>
+
+                  </div>
+
                 </div>
               </motion.div>
             </motion.div>

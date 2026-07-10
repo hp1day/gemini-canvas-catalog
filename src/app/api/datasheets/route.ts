@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server"
 import { Storage } from "@google-cloud/storage"
 
+export const dynamic = "force-dynamic"
+
+
 // Initialize GCS storage client using Application Default Credentials
 const storage = new Storage()
 const BUCKET_NAME = "conerstonepartlib"
