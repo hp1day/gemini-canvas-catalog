@@ -514,6 +514,141 @@ const Blueprints = {
   )
 }
 
+// Beautiful custom markdown parser and renderer for premium Gemini-style responses
+function MarkdownRenderer({ text }: { text: string }) {
+  if (!text) return null;
+
+  // Split text by lines
+  const lines = text.split('\n');
+  const elements: React.ReactNode[] = [];
+  let currentList: React.ReactNode[] = [];
+  let inList = false;
+
+  const flushList = (key: number) => {
+    if (currentList.length > 0) {
+      elements.push(
+        <ul key={`ul-${key}`} className="list-disc pl-5 my-2 space-y-1 text-[11px] text-slate-700 leading-relaxed font-sans">
+          {currentList}
+        </ul>
+      );
+      currentList = [];
+    }
+    inList = false;
+  };
+
+  // Helper to parse inline styles like **bold**, *italic*, and `code`
+  const parseInline = (inlineText: string) => {
+    const parts = inlineText.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`)/g);
+    return parts.map((part, idx) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={idx} className="font-extrabold text-slate-900">{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith('*') && part.endsWith('*')) {
+        return <em key={idx} className="italic text-slate-800">{part.slice(1, -1)}</em>;
+      }
+      if (part.startsWith('`') && part.endsWith('`')) {
+        return <code key={idx} className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-[10px] font-mono text-[#0f2d59] font-bold">{part.slice(1, -1)}</code>;
+      }
+      return part;
+    });
+  };
+
+  let inTable = false;
+  let tableHeaders: string[] = [];
+  let tableRows: string[][] = [];
+
+  const flushTable = (key: number) => {
+    if (inTable && (tableHeaders.length > 0 || tableRows.length > 0)) {
+      elements.push(
+        <div key={`table-wrapper-${key}`} className="my-2.5 overflow-hidden rounded-xl border border-slate-200 shadow-sm bg-white">
+          <table className="w-full text-left text-[11px] border-collapse">
+            {tableHeaders.length > 0 && (
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[9px] font-mono">
+                  {tableHeaders.map((h, i) => (
+                    <th key={i} className="py-2 px-3">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+            )}
+            <tbody className="divide-y divide-slate-100 font-sans text-slate-600">
+              {tableRows.map((row, idx) => (
+                <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                  {row.map((cell, i) => (
+                    <td key={i} className="py-2 px-3">{parseInline(cell)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+      tableHeaders = [];
+      tableRows = [];
+    }
+    inTable = false;
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+
+    // Check for tables
+    if (line.startsWith('|')) {
+      flushList(i);
+      inTable = true;
+      const cells = line.split('|').map(c => c.trim()).filter((_, idx, arr) => idx > 0 && idx < arr.length - 1);
+      
+      // Skip separator row (e.g. | :--- | :--- |)
+      if (cells.every(cell => /^[:-\s]+$/.test(cell))) {
+        continue;
+      }
+
+      if (tableHeaders.length === 0) {
+        tableHeaders = cells;
+      } else {
+        tableRows.push(cells);
+      }
+      continue;
+    } else {
+      flushTable(i);
+    }
+
+    // Check for headers
+    if (line.startsWith('#')) {
+      flushList(i);
+      const level = line.match(/^#+/)?.[0].length || 1;
+      const title = line.replace(/^#+\s*/, '');
+      const cleanTitle = parseInline(title);
+      
+      if (level === 1) elements.push(<h1 key={i} className="text-[13px] font-extrabold text-slate-900 mt-3.5 mb-1.5 first:mt-0 font-sans leading-snug">{cleanTitle}</h1>);
+      else if (level === 2) elements.push(<h2 key={i} className="text-xs font-extrabold text-slate-900 mt-3 mb-1.5 first:mt-0 font-sans leading-snug">{cleanTitle}</h2>);
+      else if (level === 3) elements.push(<h3 key={i} className="text-[11.5px] font-bold text-slate-950 mt-2.5 mb-1 first:mt-0 font-sans leading-snug">{cleanTitle}</h3>);
+      else elements.push(<h4 key={i} className="text-[11px] font-bold text-slate-900 mt-2 mb-1 first:mt-0 font-sans leading-snug">{cleanTitle}</h4>);
+      continue;
+    }
+
+    // Check for list items
+    if (line.startsWith('* ') || line.startsWith('- ')) {
+      inList = true;
+      const itemText = line.substring(2);
+      currentList.push(<li key={`li-${i}`}>{parseInline(itemText)}</li>);
+      continue;
+    } else {
+      flushList(i);
+    }
+
+    // Paragraph
+    if (line !== '') {
+      elements.push(<p key={i} className="text-[11px] text-slate-600 leading-relaxed font-sans font-normal my-1">{parseInline(line)}</p>);
+    }
+  }
+
+  flushList(lines.length);
+  flushTable(lines.length);
+
+  return <div className="space-y-0.5">{elements}</div>;
+}
+
 // Initial Parts List representing Cornerstone's primary divisions and brands
 const INITIAL_PARTS: Part[] = [
   {
@@ -1751,8 +1886,8 @@ export default function Home() {
                               <img src={msg.imageUrl} alt="Uploaded component photographs" className="object-contain max-h-48 w-full" />
                             </div>
                           )}
-                          <div className="whitespace-pre-line text-[11.5px] font-sans prose prose-slate max-w-none">
-                            {msg.text}
+                          <div className="text-[11px] font-sans prose prose-slate max-w-none">
+                            <MarkdownRenderer text={msg.text} />
                           </div>
 
                           {/* Render specification tables in responses */}
@@ -1895,9 +2030,9 @@ export default function Home() {
                 </div>
 
                 <h4 className="text-sm font-extrabold text-slate-800 leading-snug">{selectedPart.name}</h4>
-                <p className="text-[11px] text-slate-600 leading-relaxed mt-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                  {selectedPart.description}
-                </p>
+                <div className="text-[11px] text-slate-600 leading-relaxed mt-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                  <MarkdownRenderer text={selectedPart.description} />
+                </div>
 
                 {/* Spec sheets details grid */}
                 <div className="mt-4 space-y-2 text-xs">
