@@ -1709,63 +1709,74 @@ export default function Home() {
 
             {/* TAB 3: GEMINI TECHNICAL ASSISTANT CHAT */}
             <TabsContent value="chat" className="mt-0 focus-visible:ring-0 focus-visible:outline-none">
-              <div className="flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden h-[500px] shadow-sm">
+              <div className="flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden h-auto max-h-[550px] shadow-sm transition-all duration-300">
                 <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between text-xs text-slate-600 font-mono">
                   <span className="flex items-center gap-1.5 font-bold"><Sparkles className="h-3.5 w-3.5 text-orange-600 animate-pulse" /> GEMINI AI SPEC ENGINE</span>
                   <span className="text-[9px] text-slate-400 font-bold">KNOWLEDGE BASIS: CORNERSTONE BRANDS v7.0</span>
                 </div>
 
                 {/* Messages bubble container */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs custom-scrollbar bg-slate-50/30">
+                <div className="overflow-y-auto p-4 space-y-4 text-xs custom-scrollbar bg-slate-50/30 flex-1">
                   {chatMessages.map((msg) => (
-                    <div 
-                      key={msg.id}
-                      className={`flex gap-3 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                    >
-                      {msg.sender === "ai" && (
-                        <div className="h-7 w-7 rounded bg-orange-50 border border-orange-200 text-orange-600 flex items-center justify-center shrink-0">
-                          <Sparkles className="h-4 w-4" />
+                    msg.id === "m-1" ? (
+                      <div key={msg.id} className="w-full bg-orange-50/40 border border-orange-200/50 rounded-xl p-4 shadow-sm flex flex-col gap-2 relative animate-in fade-in duration-300">
+                        <div className="flex items-center gap-2 text-orange-800 font-extrabold text-xs uppercase font-mono tracking-wider">
+                          <Sparkles className="h-4 w-4 text-orange-600 animate-pulse" /> Specs & Engineering Instruction Frame
                         </div>
-                      )}
-                      <div className={`max-w-[85%] rounded-xl px-4 py-3 leading-relaxed flex flex-col gap-2 ${
-                        msg.sender === "user" 
-                          ? "bg-blue-600 text-white font-medium shadow-sm shadow-blue-600/10" 
-                          : "bg-white text-slate-800 border border-slate-200 shadow-sm"
-                      }`}>
-                        {/* Render image inside bubble if present */}
-                        {msg.imageUrl && (
-                          <div className="relative rounded-lg overflow-hidden border border-slate-100 max-h-48 max-w-sm mb-2 shadow-sm bg-slate-100 shrink-0">
-                            <img src={msg.imageUrl} alt="Uploaded component photographs" className="object-contain max-h-48 w-full" />
-                          </div>
-                        )}
-                        <div className="whitespace-pre-line text-[11.5px] font-sans prose prose-slate max-w-none">
+                        <p className="text-[11.5px] text-slate-700 leading-relaxed font-sans font-medium">
                           {msg.text}
-                        </div>
-
-                        {/* Render specification tables in responses */}
-                        {msg.tableData && (
-                          <div className="rounded-lg border border-slate-200 overflow-hidden bg-white mt-1 select-text shadow-sm">
-                            <table className="w-full text-left text-[10px] font-mono border-collapse">
-                              <thead>
-                                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
-                                  <th className="py-1 px-3">Specification Factor</th>
-                                  <th className="py-1 px-3 text-right">Value Rating</th>
-                                </tr>
-                              </thead>
-                              <tbody className="divide-y divide-slate-100 text-slate-700">
-                                {msg.tableData.map((row, idx) => (
-                                  <tr key={idx}>
-                                    <td className="py-1 px-3">{row.label}</td>
-                                    <td className="py-1 px-3 text-right text-emerald-600 font-bold">{row.value}</td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
+                        </p>
+                      </div>
+                    ) : (
+                      <div 
+                        key={msg.id}
+                        className={`flex gap-3 ${msg.sender === "user" ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`}
+                      >
+                        {msg.sender === "ai" && (
+                          <div className="h-7 w-7 rounded bg-orange-50 border border-orange-200 text-orange-600 flex items-center justify-center shrink-0">
+                            <Sparkles className="h-4 w-4" />
                           </div>
                         )}
-                        <span className={`text-[8px] font-mono self-end ${msg.sender === "user" ? "text-blue-100" : "text-slate-400"}`}>{msg.timestamp}</span>
+                        <div className={`max-w-[85%] rounded-xl px-4 py-3 leading-relaxed flex flex-col gap-2 ${
+                          msg.sender === "user" 
+                            ? "bg-blue-600 text-white font-medium shadow-sm shadow-blue-600/10" 
+                            : "bg-white text-slate-800 border border-slate-200 shadow-sm"
+                        }`}>
+                          {/* Render image inside bubble if present */}
+                          {msg.imageUrl && (
+                            <div className="relative rounded-lg overflow-hidden border border-slate-100 max-h-48 max-w-sm mb-2 shadow-sm bg-slate-100 shrink-0">
+                              <img src={msg.imageUrl} alt="Uploaded component photographs" className="object-contain max-h-48 w-full" />
+                            </div>
+                          )}
+                          <div className="whitespace-pre-line text-[11.5px] font-sans prose prose-slate max-w-none">
+                            {msg.text}
+                          </div>
+
+                          {/* Render specification tables in responses */}
+                          {msg.tableData && (
+                            <div className="rounded-lg border border-slate-200 overflow-hidden bg-white mt-1 select-text shadow-sm">
+                              <table className="w-full text-left text-[10px] font-mono border-collapse">
+                                <thead>
+                                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
+                                    <th className="py-1 px-3">Specification Factor</th>
+                                    <th className="py-1 px-3 text-right">Value Rating</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 text-slate-700">
+                                  {msg.tableData.map((row, idx) => (
+                                    <tr key={idx}>
+                                      <td className="py-1 px-3">{row.label}</td>
+                                      <td className="py-1 px-3 text-right text-emerald-600 font-bold">{row.value}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                          <span className={`text-[8px] font-mono self-end ${msg.sender === "user" ? "text-blue-100" : "text-slate-400"}`}>{msg.timestamp}</span>
+                        </div>
                       </div>
-                    </div>
+                    )
                   ))}
                   
                   {isAiTyping && (
