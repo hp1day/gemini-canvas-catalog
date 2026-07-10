@@ -142,8 +142,8 @@ INSTRUCTIONS:
       parts: currentParts
     });
 
-    // 5. Query Gemini 2.5 Flash
-    const model = vertexAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    // 5. Query Gemini 2.5 Pro
+    const model = vertexAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
     const response = await model.generateContent({ contents });
     
     const responseText = response.response?.candidates?.[0]?.content?.parts?.[0]?.text || 
