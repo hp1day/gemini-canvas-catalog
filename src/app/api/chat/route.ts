@@ -64,24 +64,15 @@ export async function POST(request: Request) {
     // Get the top 2 matching files to attach
     const topMatches = scoredFiles.slice(0, 2);
 
-    // Prepare buffers and display names of matched files
+    // Prepare GCS URIs and display names of matched files
     const matchedSources: string[] = [];
-    const attachments: { data: string; mimeType: string }[] = [];
+    const attachments: { fileUri: string; mimeType: string }[] = [];
 
     for (const match of topMatches) {
       console.log(`Matched grounded document: ${match.fullPath} (Score: ${match.score})`);
-      const [buffer] = await match.file.download();
-      
-      // Safety limit: Keep individual file size under 12MB to fit overall Vertex request budget
-      let attachmentBuffer = buffer;
-      if (buffer.length > 12 * 1024 * 1024) {
-        console.warn(`Attached PDF ${match.displayName} is too large, truncating...`);
-        attachmentBuffer = buffer.subarray(0, 12 * 1024 * 1024);
-      }
-
       attachments.push({
-        mimeType: 'application/pdf',
-        data: attachmentBuffer.toString('base64')
+        fileUri: `gs://${bucketName}/${match.fullPath}`,
+        mimeType: 'application/pdf'
       });
       matchedSources.push(match.displayName);
     }
@@ -133,7 +124,7 @@ INSTRUCTIONS:
     // Add multiple PDF attachments if matched
     for (const attachment of attachments) {
       currentParts.push({
-        inlineData: attachment
+        fileData: attachment
       });
     }
 
