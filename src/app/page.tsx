@@ -1131,17 +1131,25 @@ export default function Home() {
           ========================================== */}
       <header className="sticky top-0 z-30 bg-[#0f2d59] text-white shadow-md border-b border-[#0b2447] px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-orange-500 p-0.5 shadow-lg flex items-center justify-center">
-            <div className="h-full w-full rounded-[10px] bg-[#0f2d59] flex items-center justify-center">
-              <Building2 className="h-5 w-5 text-orange-400 animate-pulse" />
+          <a 
+            href="https://www.cornerstonebuildingbrands.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="flex items-center gap-3 hover:opacity-90 transition-opacity"
+            title="Visit Cornerstone Building Brands website"
+          >
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-orange-500 p-0.5 shadow-lg flex items-center justify-center">
+              <div className="h-full w-full rounded-[10px] bg-[#0f2d59] flex items-center justify-center">
+                <Building2 className="h-5 w-5 text-orange-400 animate-pulse" />
+              </div>
             </div>
-          </div>
-          <div>
-            <h1 className="text-base font-extrabold tracking-wider text-white flex items-center gap-2">
-              CORNERSTONE <span className="text-[#1a4f7c] font-medium">|</span> <span className="text-[10px] font-bold tracking-wide px-2.5 py-0.5 bg-orange-500/20 text-orange-300 rounded-full border border-orange-500/30">Parts Catalog System</span>
-            </h1>
-            <p className="text-[9px] text-slate-300 uppercase tracking-widest font-mono font-bold">North American Exterior Cladding Database</p>
-          </div>
+            <div>
+              <h1 className="text-base font-extrabold tracking-wider text-white flex items-center gap-2">
+                CORNERSTONE <span className="text-[#1a4f7c] font-medium">|</span> <span className="text-[10px] font-bold tracking-wide px-2.5 py-0.5 bg-orange-500/20 text-orange-300 rounded-full border border-orange-500/30">Parts Library</span>
+              </h1>
+              <p className="text-[9px] text-slate-300 uppercase tracking-widest font-mono font-bold">North American Exterior Cladding Database</p>
+            </div>
+          </a>
         </div>
 
         {/* Live BOM Metrics counter */}
@@ -1198,7 +1206,7 @@ export default function Home() {
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-slate-200 pb-4 mb-4">
               <TabsList className="bg-slate-200 p-1 border border-slate-300 rounded-xl shadow-inner">
                 <TabsTrigger value="parts" className="text-xs font-bold py-1.5 px-3 rounded-lg data-[state=active]:bg-[#0f2d59] data-[state=active]:text-white text-slate-600 hover:text-slate-900 cursor-pointer flex items-center gap-1.5 transition-all">
-                  <Boxes className="h-3.5 w-3.5" /> Product Catalog
+                  <Boxes className="h-3.5 w-3.5" /> Parts Library
                 </TabsTrigger>
                 <TabsTrigger value="fabricator" className="text-xs font-bold py-1.5 px-3 rounded-lg data-[state=active]:bg-purple-700 data-[state=active]:text-white text-slate-600 hover:text-slate-900 cursor-pointer flex items-center gap-1.5 transition-all">
                   <Hammer className="h-3.5 w-3.5" /> Custom Flashing Configurator
