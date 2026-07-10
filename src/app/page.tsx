@@ -2444,8 +2444,11 @@ export default function Home() {
                 {/* Configuration form panel */}
                 <div className="lg:col-span-7 flex flex-col gap-5">
                   <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 className="text-sm font-extrabold text-slate-800 flex items-center gap-1.5 mb-1">
-                      <Wrench className="h-4 w-4 text-purple-600" /> Extrusion Flashing Parameters
+                    <h3 className="text-sm font-extrabold text-slate-800 flex items-center justify-between gap-1.5 mb-1">
+                      <span className="flex items-center gap-1.5">
+                        <Wrench className="h-4 w-4 text-purple-600" /> Extrusion Flashing Parameters
+                      </span>
+                      <span className="text-[9px] font-mono font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200 uppercase tracking-wider">v7.2-active-lifecycle</span>
                     </h3>
                     <p className="text-[11px] text-slate-500 mb-5 leading-relaxed">Configure a custom aluminum, steel, or vinyl structural trim panel. Our press brake system will automatically bend and fabricate to your exact length.</p>
                     
