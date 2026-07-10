@@ -61,6 +61,7 @@ interface Part {
   specs: { label: string; value: string }[]
   svgBlueprint: React.ReactNode
   isSynthesized?: boolean
+  hasPdfDatasheet?: boolean
 }
 
 // Custom-crafted high-end SVG vector blueprints for construction parts
@@ -555,7 +556,8 @@ const INITIAL_PARTS: Part[] = [
       { label: "Hole Punch Pattern", value: "1.0\" Slotted Eyelets" },
       { label: "Thermal Expansion Allow.", value: "0.25\" slider channels" }
     ],
-    svgBlueprint: Blueprints.starterStrip
+    svgBlueprint: Blueprints.starterStrip,
+    hasPdfDatasheet: true
   },
   {
     id: "SID-STN-003",
@@ -618,7 +620,8 @@ const INITIAL_PARTS: Part[] = [
       { label: "Recoil Spring Tension", value: "Constant 15.0 lbs pressure" },
       { label: "Nylon Carrier Spec", value: "Self-lubricating PTFE composite" }
     ],
-    svgBlueprint: Blueprints.balanceSpring
+    svgBlueprint: Blueprints.balanceSpring,
+    hasPdfDatasheet: true
   },
   {
     id: "WIN-HDW-103",
@@ -798,6 +801,28 @@ export default function Home() {
   const [fabricatePrompt, setFabricatePrompt] = useState("")
   const [fabricateStep, setFabricateStep] = useState<number>(-1) // -1 is idle, 0 to 6 are steps, 7 is done
   const [newlyFabricatedPart, setNewlyFabricatedPart] = useState<Part | null>(null)
+  
+  // Cloud Storage PDF Datasheet State
+  const [pdfLoading, setPdfLoading] = useState(false)
+  const [activePdfUrl, setActivePdfUrl] = useState<string | null>(null)
+
+  const handleViewDatasheet = async (partId: string) => {
+    setPdfLoading(true)
+    try {
+      const res = await fetch(`/api/datasheets?partId=${partId}`)
+      const data = await res.json()
+      if (data.url) {
+        setActivePdfUrl(data.url)
+      } else {
+        alert("Error loading datasheet: " + (data.error || "File not found."))
+      }
+    } catch (err) {
+      console.error(err)
+      alert("Failed to fetch PDF datasheet from cloud server.")
+    } finally {
+      setPdfLoading(false)
+    }
+  }
   
   // Ref for scrolling terminal to bottom
   const terminalBottomRef = useRef<HTMLDivElement>(null)
@@ -1990,6 +2015,24 @@ export default function Home() {
                     <Download className="h-3.5 w-3.5" /> Technical CAD
                   </Button>
                 </div>
+
+                {selectedPart.hasPdfDatasheet && (
+                  <Button 
+                    disabled={pdfLoading}
+                    onClick={() => handleViewDatasheet(selectedPart.id)}
+                    className="w-full mt-2 border border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 font-extrabold h-9 rounded-lg text-xs cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                  >
+                    {pdfLoading ? (
+                      <>
+                        <RefreshCw className="h-3.5 w-3.5 animate-spin mr-1 text-emerald-600" /> Generating Secure Link...
+                      </>
+                    ) : (
+                      <>
+                        <FileText className="h-3.5 w-3.5 text-emerald-600 mr-1" /> View Original PDF Datasheet
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
             ) : (
               <div className="text-slate-400 italic text-center py-10 text-[11px] leading-relaxed">
@@ -2104,6 +2147,44 @@ export default function Home() {
 
         </section>
         )}
+
+        <AnimatePresence>
+          {activePdfUrl && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+            >
+              <motion.div 
+                initial={{ scale: 0.95, y: 15 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.95, y: 15 }}
+                className="bg-white rounded-2xl w-full max-w-5xl h-[85vh] shadow-2xl flex flex-col overflow-hidden border border-slate-100"
+              >
+                <div className="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-emerald-400" />
+                    <h3 className="font-extrabold tracking-wide text-sm">{selectedPart?.name} — Engineering Spec Sheet</h3>
+                  </div>
+                  <button 
+                    onClick={() => setActivePdfUrl(null)}
+                    className="text-slate-400 hover:text-white font-bold text-lg cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="flex-1 bg-slate-100">
+                  <iframe 
+                    src={`${activePdfUrl}#toolbar=1`} 
+                    className="w-full h-full border-none" 
+                    title="Ply Gem Engineering Datasheet"
+                  />
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </main>
     </div>
