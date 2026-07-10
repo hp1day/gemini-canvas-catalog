@@ -1204,15 +1204,24 @@ export default function Home() {
           
           <Tabs defaultValue="parts" className="w-full flex flex-col flex-1">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-slate-200 pb-4 mb-4">
-              <TabsList className="bg-slate-200 p-1 border border-slate-300 rounded-xl shadow-inner">
-                <TabsTrigger value="parts" className="text-xs font-bold py-1.5 px-3 rounded-lg data-[state=active]:bg-[#0f2d59] data-[state=active]:text-white text-slate-600 hover:text-slate-900 cursor-pointer flex items-center gap-1.5 transition-all">
-                  <Boxes className="h-3.5 w-3.5" /> Parts Library
+              <TabsList className="bg-slate-200/80 p-1.5 border border-slate-300 rounded-2xl shadow-inner flex items-center h-12 gap-1.5">
+                <TabsTrigger 
+                  value="parts" 
+                  className="text-xs font-extrabold py-2 px-4 rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#0f2d59] data-[state=active]:to-[#1d4f8f] data-[state=active]:text-white text-slate-600 hover:text-[#0f2d59] hover:bg-white/60 cursor-pointer flex items-center gap-2 transition-all duration-300 data-[state=active]:shadow-lg data-[state=active]:shadow-blue-950/15 data-[state=active]:scale-[1.03] active:scale-95 select-none"
+                >
+                  <Boxes className="h-4 w-4 shrink-0" /> Parts Library
                 </TabsTrigger>
-                <TabsTrigger value="fabricator" className="text-xs font-bold py-1.5 px-3 rounded-lg data-[state=active]:bg-purple-700 data-[state=active]:text-white text-slate-600 hover:text-slate-900 cursor-pointer flex items-center gap-1.5 transition-all">
-                  <Hammer className="h-3.5 w-3.5" /> Custom Flashing Configurator
+                <TabsTrigger 
+                  value="fabricator" 
+                  className="text-xs font-extrabold py-2 px-4 rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-700 data-[state=active]:to-indigo-600 data-[state=active]:text-white text-slate-600 hover:text-purple-700 hover:bg-white/60 cursor-pointer flex items-center gap-2 transition-all duration-300 data-[state=active]:shadow-lg data-[state=active]:shadow-purple-700/15 data-[state=active]:scale-[1.03] active:scale-95 select-none"
+                >
+                  <Hammer className="h-4 w-4 shrink-0" /> Custom Flashing Configurator
                 </TabsTrigger>
-                <TabsTrigger value="chat" className="text-xs font-bold py-1.5 px-3 rounded-lg data-[state=active]:bg-orange-600 data-[state=active]:text-white text-slate-600 hover:text-slate-900 cursor-pointer flex items-center gap-1.5 transition-all">
-                  <Sparkles className="h-3.5 w-3.5" /> Gemini Technical Assistant
+                <TabsTrigger 
+                  value="chat" 
+                  className="text-xs font-extrabold py-2 px-4 rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-600 data-[state=active]:to-amber-500 data-[state=active]:text-white text-slate-600 hover:text-orange-600 hover:bg-white/60 cursor-pointer flex items-center gap-2 transition-all duration-300 data-[state=active]:shadow-lg data-[state=active]:shadow-orange-600/15 data-[state=active]:scale-[1.03] active:scale-95 select-none"
+                >
+                  <Sparkles className="h-4 w-4 shrink-0 text-orange-500 data-[state=active]:text-white" /> Gemini Technical Assistant
                 </TabsTrigger>
               </TabsList>
 
