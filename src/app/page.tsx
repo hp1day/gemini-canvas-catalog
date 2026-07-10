@@ -50,9 +50,9 @@ import { motion, AnimatePresence } from "framer-motion"
 interface Part {
   id: string
   name: string
-  division: "siding" | "windows" | "metal" | "custom"
+  division: "siding" | "windows" | "metal" | "custom" | "gutter" | "fencing" | "fasteners"
   divisionLabel: string
-  brand: "Ply Gem" | "Simonton" | "Mastic" | "MBCI" | "Star Building Systems" | "Environmental Stoneworks" | "Custom Fabricated" | "Metl-Span"
+  brand: "Ply Gem" | "Simonton" | "Mastic" | "MBCI" | "Star Building Systems" | "Environmental Stoneworks" | "Custom Fabricated" | "Metl-Span" | "Variform" | "Mueller" | "Leaf Relief" | "Performance Metals" | "D&D Hardware" | "Builder Series" | "Mira Premium"
   description: string
   weight: number // in lbs
   cost: number // in USD
@@ -62,6 +62,14 @@ interface Part {
   svgBlueprint: React.ReactNode
   isSynthesized?: boolean
   hasPdfDatasheet?: boolean
+  
+  // High-fidelity schema fields from the new instructions
+  category?: string
+  subCategory?: string
+  materialComposition?: string
+  colors?: string[]
+  compatibility?: string
+  compliance?: string
 }
 
 // Custom-crafted high-end SVG vector blueprints for construction parts
@@ -481,6 +489,112 @@ const Blueprints = {
       </g>
     </svg>
   ),
+  handleSet: (
+    <svg viewBox="0 0 100 120" className="w-full h-full stroke-orange-400 fill-none" strokeWidth="1.2">
+      <defs>
+        <pattern id="grid-orange-hdw" width="10" height="10" patternUnits="userSpaceOnUse">
+          <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(251, 146, 60, 0.07)" strokeWidth="0.5" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid-orange-hdw)" stroke="none" />
+      <g className="stroke-orange-500">
+        {/* Handle escutcheon plate */}
+        <rect x="40" y="20" width="20" height="70" rx="4" />
+        {/* Key cylinder cutouts */}
+        <circle cx="50" cy="35" r="3.5" className="stroke-orange-400/60" />
+        <path d="M 50 38.5 L 50 43 M 48 43 L 52 43" strokeWidth="1" className="stroke-orange-400/60" />
+        {/* Screw mount holes */}
+        <circle cx="50" cy="25" r="1.5" className="stroke-orange-300/40" />
+        <circle cx="50" cy="85" r="1.5" className="stroke-orange-300/40" />
+        {/* Lever Handle */}
+        <path d="M 50 55 C 50 50, 60 50, 75 48 C 82 48, 85 53, 80 56 C 73 59, 58 58, 50 58" fill="rgba(251, 146, 60, 0.15)" strokeWidth="1.5" />
+      </g>
+      <g strokeWidth="0.75" className="stroke-orange-300/50 text-[5px] fill-orange-400 font-mono">
+        <line x1="25" y1="25" x2="25" y2="85" />
+        <line x1="22" y1="25" x2="28" y2="25" />
+        <line x1="22" y1="85" x2="28" y2="85" />
+        <text x="17" y="55" textAnchor="middle" rotate="-90" fontSize="5" className="fill-orange-400 font-bold">3.93" HOLE CTR</text>
+        <text x="50" y="110" textAnchor="middle" fontSize="6.5" className="font-bold tracking-wider fill-orange-400">PATIO DOOR HANDLE</text>
+      </g>
+    </svg>
+  ),
+  gutterHanger: (
+    <svg viewBox="0 0 100 120" className="w-full h-full stroke-emerald-400 fill-none" strokeWidth="1.2">
+      <defs>
+        <pattern id="grid-em-gut" width="10" height="10" patternUnits="userSpaceOnUse">
+          <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(52, 211, 153, 0.07)" strokeWidth="0.5" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid-em-gut)" stroke="none" />
+      <g className="stroke-emerald-500">
+        {/* Gutter Guard access panel perforated texture or hanger assembly */}
+        <path d="M 20 50 L 80 50" strokeWidth="1.5" />
+        {/* Hanger support clip */}
+        <path d="M 20 50 Q 20 40, 25 35 L 35 35 Q 40 35, 45 42 L 55 42 L 75 50 Q 80 50, 80 55" />
+        {/* Structural screw alignment */}
+        <line x1="15" y1="30" x2="60" y2="55" strokeDasharray="3 2" className="stroke-emerald-400/50" />
+        <path d="M 12 28 L 18 32 M 13 26 L 15 34" strokeWidth="1" className="stroke-emerald-400" />
+      </g>
+      <g strokeWidth="0.75" className="stroke-emerald-300/50 text-[5px] fill-emerald-400 font-mono">
+        <text x="50" y="20" textAnchor="middle" fontSize="5.5" className="fill-emerald-400 font-bold">6.0" INTEGRAL ACCESS</text>
+        <text x="50" y="110" textAnchor="middle" fontSize="6.5" className="font-bold tracking-wider fill-emerald-400">RAINWARE ACCESSORIES</text>
+      </g>
+    </svg>
+  ),
+  fencePost: (
+    <svg viewBox="0 0 100 120" className="w-full h-full stroke-indigo-400 fill-none" strokeWidth="1.2">
+      <defs>
+        <pattern id="grid-indigo-post" width="10" height="10" patternUnits="userSpaceOnUse">
+          <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(129, 140, 248, 0.07)" strokeWidth="0.5" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid-indigo-post)" stroke="none" />
+      <g className="stroke-indigo-500">
+        {/* Outer square of vinyl post */}
+        <rect x="25" y="25" width="50" height="50" rx="3" strokeWidth="1.5" />
+        {/* Inner core thickness wall */}
+        <rect x="28" y="28" width="44" height="44" rx="2" strokeWidth="0.75" strokeDasharray="2 1" className="stroke-indigo-400/50" />
+        {/* Routed rail holes */}
+        <rect x="25" y="38" width="5" height="24" rx="0.5" className="stroke-indigo-300/70 fill-indigo-500/10" />
+        <rect x="70" y="38" width="5" height="24" rx="0.5" className="stroke-indigo-300/70 fill-indigo-500/10" />
+      </g>
+      <g strokeWidth="0.75" className="stroke-indigo-300/50 text-[5px] fill-indigo-400 font-mono">
+        <line x1="25" y1="83" x2="75" y2="83" />
+        <line x1="25" y1="80" x2="25" y2="86" />
+        <line x1="75" y1="80" x2="75" y2="86" />
+        <text x="50" y="91" textAnchor="middle" fontSize="6.5" className="fill-indigo-400 font-bold">5.0" x 5.0" PROFILE</text>
+        <text x="50" y="110" textAnchor="middle" fontSize="6.5" className="font-bold tracking-wider fill-indigo-400">ROUTED VINYL POST</text>
+      </g>
+    </svg>
+  ),
+  cortexScrew: (
+    <svg viewBox="0 0 100 120" className="w-full h-full stroke-rose-400 fill-none" strokeWidth="1.2">
+      <defs>
+        <pattern id="grid-rose-fast" width="10" height="10" patternUnits="userSpaceOnUse">
+          <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(244, 63, 94, 0.07)" strokeWidth="0.5" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid-rose-fast)" stroke="none" />
+      <g className="stroke-rose-500">
+        {/* Torx drive screw head */}
+        <path d="M 30 25 L 70 25 L 60 35 L 53 35 L 53 85 L 47 85 L 47 35 L 40 35 Z" fill="rgba(244, 63, 94, 0.1)" />
+        {/* Torx star drive socket representation */}
+        <polygon points="50,27 52,30 55,30 53,32 54,35 50,33 46,35 47,32 45,30 48,30" className="stroke-rose-400/80 fill-rose-500/20" strokeWidth="0.5" />
+        {/* Screw threads */}
+        <path d="M 47 45 L 53 48 M 47 52 L 53 55 M 47 59 L 53 62 M 47 66 L 53 69 M 47 73 L 53 76 M 47 80 L 50 83" strokeWidth="1" />
+        {/* Cortex plug cap */}
+        <rect x="38" y="12" width="24" height="6" rx="1" className="stroke-rose-400 fill-rose-500/20" />
+        <path d="M 44 18 L 44 24 M 56 18 L 56 24" strokeDasharray="1 1" className="stroke-rose-300/40" />
+      </g>
+      <g strokeWidth="0.75" className="stroke-rose-300/50 text-[5px] fill-rose-400 font-mono">
+        <line x1="18" y1="25" x2="18" y2="85" />
+        <line x1="15" y1="25" x2="21" y2="25" />
+        <line x1="15" y1="85" x2="21" y2="85" />
+        <text x="12" y="55" textAnchor="middle" rotate="-90" fontSize="5.5" className="fill-rose-400 font-bold">2.75" LENGTH</text>
+        <text x="50" y="110" textAnchor="middle" fontSize="6.5" className="font-bold tracking-wider fill-rose-400">CORTEX FASTENER & PLUG</text>
+      </g>
+    </svg>
+  ),
   customFabricated: (
     <svg viewBox="0 0 100 120" className="w-full h-full stroke-purple-400 fill-none" strokeWidth="1.2">
       <defs>
@@ -649,141 +763,440 @@ function MarkdownRenderer({ text }: { text: string }) {
   return <div className="space-y-0.5">{elements}</div>;
 }
 
-// Initial Parts List representing Cornerstone's primary divisions and brands
 const INITIAL_PARTS: Part[] = [
+  // --- A. SIDING & TRIM ACCESSORIES (Mastic & Ply Gem) ---
   {
-    id: "SID-VIN-001",
-    name: "Mastic Quest Double 4\" Vinyl Siding Panel",
-    division: "siding",
-    divisionLabel: "Siding, Stone & Trim",
-    brand: "Mastic",
-    description: "Premium vinyl siding panel with Tornado-Tough interlocking double-thick nail hem and realistic woodgrain cedar texture. Engineered to resist winds up to 240 mph.",
-    weight: 5.3,
-    cost: 14.50,
-    material: "Impact-Resistant PVC Vinyl",
-    finish: "Cedar-Grain Matte Finish",
-    specs: [
-      { label: "Nominal Thickness", value: "0.046 inches" },
-      { label: "Profile Exposure", value: "8.0 inches (Double 4\")" },
-      { label: "Panel Length", value: "12 feet 6 inches" },
-      { label: "Flame Spread Index", value: "Class A (Fire Rated)" },
-      { label: "Windload Capacity", value: "Up to 240 mph rating" },
-      { label: "Interlock Design", value: "Tornado-Tough Double Hem" }
-    ],
-    svgBlueprint: Blueprints.vinylSiding
-  },
-  {
-    id: "SID-ACC-002",
-    name: "Ply Gem Heavy Duty Galvanized Siding Starter Strip",
+    id: "EPVST",
+    name: "Horizontal EverPlank Starter Strip",
     division: "siding",
     divisionLabel: "Siding, Stone & Trim",
     brand: "Ply Gem",
-    description: "Heavy-gauge galvanized steel base starter strip, precision-formed to lock and secure the initial course of exterior vinyl cladding panels.",
-    weight: 1.8,
-    cost: 5.25,
-    material: "G90 Galvanized Carbon Steel",
-    finish: "Zinc-Plated Mill Finish",
+    description: "Heavy-duty starter profile engineered to establish and secure the initial course of EverPlank siding cladding systems.",
+    weight: 2.1,
+    cost: 8.50,
+    material: "G90 Galvanized Steel",
+    finish: "Mill Galvanized Zinc Coating",
     specs: [
       { label: "Steel Gauge", value: "22 Gauge" },
       { label: "Profile Height", value: "2.5 inches" },
       { label: "Overall Length", value: "10 feet 0 inches" },
-      { label: "Corrosion Resistance", value: "G90 Hot-Dip Coating" },
-      { label: "Hole Punch Pattern", value: "1.0\" Slotted Eyelets" },
-      { label: "Thermal Expansion Allow.", value: "0.25\" slider channels" }
+      { label: "Corrosion Resistance", value: "G90 Hot-Dip Coating" }
     ],
     svgBlueprint: Blueprints.starterStrip,
-    hasPdfDatasheet: true
+    hasPdfDatasheet: true,
+    category: "Siding",
+    subCategory: "Trim Accessories",
+    materialComposition: "G90 Galvanized Carbon Steel",
+    colors: ["Zinc Mill Finish"],
+    compatibility: "Requires #8 x 1-1/2\" Flat Head Wood Screws",
+    compliance: "ASTM A653 Standard G90"
   },
   {
-    id: "SID-STN-003",
-    name: "Environmental Stoneworks dry-stack Ledgestone Corner",
+    id: "EPJCHL",
+    name: "Horizontal EverPlank J-Channel",
     division: "siding",
     divisionLabel: "Siding, Stone & Trim",
-    brand: "Environmental Stoneworks",
-    description: "Hand-finished pre-cast concrete manufactured stone veneer corner unit. Replicates dry-stack ledgestone masonry with deep shadows, rich textures, and seamless corner wrap.",
-    weight: 9.2,
-    cost: 21.90,
-    material: "Pre-Cast Portland Cement Concrete",
-    finish: "Canyon Slate Earthtone Finish",
-    specs: [
-      { label: "Unit Height", value: "12.0 inches (Vertical)" },
-      { label: "Left Leg Length", value: "8.0 inches (Exposed)" },
-      { label: "Right Leg Length", value: "4.0 inches (Exposed)" },
-      { label: "Water Absorption Ratio", value: "<8.0% (Meticulously Sealed)" },
-      { label: "Compressive Strength", value: "3000 PSI Minimum" },
-      { label: "Freeze-Thaw Performance", value: "ASTM C67 Compliant" }
-    ],
-    svgBlueprint: Blueprints.stoneCorner
-  },
-  {
-    id: "WIN-DH-101",
-    name: "Simonton DaylightMax Double-Hung Window Sash",
-    division: "windows",
-    divisionLabel: "Windows & Patio Doors",
-    brand: "Simonton",
-    description: "High-performance vinyl double-hung replacement window sash. Features double-strength Low-E glazing, multi-chamber thermal vinyl frames, and a dual-silicone weather-seal sweep.",
-    weight: 26.5,
-    cost: 95.00,
-    material: "Multi-Cavity uPVC Structural Vinyl",
-    finish: "Classic Extruded White Gloss",
-    specs: [
-      { label: "Overall Sash Width", value: "36.0 inches" },
-      { label: "Overall Sash Height", value: "24.0 inches" },
-      { label: "Glazing Spec", value: "Dual-Pane 1\" insulated Low-E" },
-      { label: "Gas Cavity Fill", value: "90% Argon Gas Filled" },
-      { label: "NFRC U-Factor Rating", value: "0.26 BTU/h·ft²·°F" },
-      { label: "AAMA Structural Class", value: "Class LC-PG50 (Residential/Comm.)" }
-    ],
-    svgBlueprint: Blueprints.windowSash
-  },
-  {
-    id: "WIN-ACC-102",
-    name: "Ply Gem Constant Force Window Balance recoil assembly",
-    division: "windows",
-    divisionLabel: "Windows & Patio Doors",
-    brand: "Ply Gem",
-    description: "Heavy-duty 1/2-inch stainless steel coil tape sash balance system. Provides continuous, ultra-smooth, silent vertical sash lift and tension stabilization.",
-    weight: 0.9,
+    brand: "Mastic",
+    description: "Multi-purpose side trim channel designed to receive and finish siding panels at window/door edges. Requires two J-channels ordered back-to-back for inside corner applications.",
+    weight: 1.4,
     cost: 11.20,
-    material: "High-Tensile 301 Stainless Steel",
-    finish: "Natural Brushed Coil / Nylon Carrier",
+    material: "Impact-Resistant PVC",
+    finish: "Cedar-Grain Matte Finish",
     specs: [
-      { label: "Tape Coil Width", value: "0.50 inches" },
-      { label: "Weight Lifting Rating", value: "15.0 lbs Lift Capacity" },
-      { label: "Travel Extension Limit", value: "38.0 inches max travel" },
-      { label: "Cycles Life Durability", value: "10,000 full sashes lifts" },
-      { label: "Recoil Spring Tension", value: "Constant 15.0 lbs pressure" },
-      { label: "Nylon Carrier Spec", value: "Self-lubricating PTFE composite" }
+      { label: "Nominal Thickness", value: "0.046 inches" },
+      { label: "Channel Opening", value: "3/4 inch" },
+      { label: "Face Width", value: "1-1/8 inches" },
+      { label: "Panel Length", value: "12 feet 6 inches" }
     ],
-    svgBlueprint: Blueprints.balanceSpring,
-    hasPdfDatasheet: true
+    svgBlueprint: Blueprints.customFabricated, // Resilient trim shape representation
+    category: "Siding",
+    subCategory: "Trim Accessories",
+    materialComposition: "Impact-Resistant PVC Vinyl",
+    colors: ["Musket Brown", "Evergreen", "Pebblestone Clay", "Sandalwood"],
+    compatibility: "Requires two J-channels ordered back-to-back for inside corners",
+    compliance: "ASTM D3679 Class A Fire Rated"
   },
   {
-    id: "WIN-HDW-103",
-    name: "Simonton Heavy Duty Cam Action Window Sash Lock",
+    id: "EPBB",
+    name: "EverPlank 10” Board & Batten Vertical Siding Panel",
+    division: "siding",
+    divisionLabel: "Siding, Stone & Trim",
+    brand: "Mastic",
+    description: "Premium co-extruded rigid vertical siding panels featuring a classic Board & Batten look with a realistic cedar-wood texture.",
+    weight: 5.6,
+    cost: 19.80,
+    material: "Rigid Polymeric PVC",
+    finish: "Extruded Woodgrain Matte",
+    specs: [
+      { label: "Panel Exposure", value: "10.0 inches" },
+      { label: "Thickness", value: "0.048 inches" },
+      { label: "Panel Length", value: "10 feet 0 inches" },
+      { label: "Wind Capacity", value: "Up to 195 mph rating" }
+    ],
+    svgBlueprint: Blueprints.vinylSiding,
+    category: "Siding",
+    subCategory: "Siding Panels",
+    materialComposition: "Co-Extruded Rigid Polymeric PVC",
+    colors: ["Pebblestone Clay", "Sandalwood", "Aged Cedar", "White"],
+    compatibility: "Requires #8 x 1-1/4\" Truss Head Wood Screws",
+    compliance: "ASTM D3679 Compliant"
+  },
+  {
+    id: "27845594-MB",
+    name: "Adams Casing HD Exterior Moulding Trim",
+    division: "siding",
+    divisionLabel: "Siding, Stone & Trim",
+    brand: "Ply Gem",
+    description: "High-definition cellular PVC casing moulding designed to add elegant, rich shadows and frame windows or door accent openings.",
+    weight: 4.8,
+    cost: 26.50,
+    material: "Cellular PVC Polymer",
+    finish: "Smooth White Semi-Gloss Finish",
+    specs: [
+      { label: "Nominal Face Width", value: "3-1/2 inches" },
+      { label: "Profile Depth", value: "1.0 inch" },
+      { label: "Standard Length", value: "16 feet 0 inches" },
+      { label: "Tensile Strength", value: "ASTM D638: 2500 PSI" }
+    ],
+    svgBlueprint: Blueprints.stoneCorner, // Multi-step shadow profile
+    category: "Siding",
+    subCategory: "Moulding",
+    materialComposition: "Cellular PVC Polymeric Composite",
+    colors: ["Sandalwood", "Pebblestone Clay", "Bright White"],
+    compatibility: "Requires Ply Gem Cortex Screws (27845655-C) & matching finish plugs",
+    compliance: "AAMA 103 Compliant, ASTM D638"
+  },
+
+  // --- B. WINDOW AND DOOR COMPONENTS (Builder Series & Mira Premium) ---
+  {
+    id: "460031005",
+    name: "Builder Series Sliding Patio Door Handle Set",
     division: "windows",
     divisionLabel: "Windows & Patio Doors",
-    brand: "Simonton",
-    description: "Architectural zinc die-cast cam action lock and keeper. Draws upper and lower sashes tightly together to compress sash seals, blocking water and air infiltration.",
-    weight: 0.4,
-    cost: 6.80,
+    brand: "Builder Series",
+    description: "Heavy-duty interior/exterior replacement handle kit for Builder Series sliding glass patio doors, complete with latch actuators and lock cylinder.",
+    weight: 1.2,
+    cost: 34.00,
     material: "Die-Cast Zinc Alloy",
-    finish: "Powder Coated Oil Rubbed Bronze",
+    finish: "Powder Coated Classic Gloss",
     specs: [
-      { label: "Mounting Screw Center", value: "2.062 inches" },
-      { label: "Lock Base Width", value: "1.12 inches" },
-      { label: "Keeper Offset Gap", value: "0.312 inches offset" },
-      { label: "Cam Throw Radius", value: "90 degrees positive stop" },
-      { label: "Sash Pull-Together", value: "0.062\" latch compression draw" },
-      { label: "Security Level", value: "Forced Entry Certified Level 10" }
+      { label: "Screw Hole Centers", value: "3-15/16 inches" },
+      { label: "Latching Mechanism", value: "Thumb-Latch Actuated" },
+      { label: "Handing Design", value: "Reversible Left/Right" },
+      { label: "Compatible Range", value: "1.5\" to 1.75\" door frame" }
     ],
-    svgBlueprint: Blueprints.camLock
+    svgBlueprint: Blueprints.handleSet,
+    category: "Windows & Doors",
+    subCategory: "Hardware Assemblies",
+    materialComposition: "Die-Cast Zinc & Stainless Steel Lock Gear",
+    colors: ["Classic White", "Satin Nickel", "Oil Rubbed Bronze"],
+    compatibility: "Requires #8-32 Oval Head Machine Screws",
+    compliance: "AAMA 101 Certified Hardware"
   },
+  {
+    id: "420122000",
+    name: "Mira Premium Dual Mortise Lock Keeper Strike",
+    division: "windows",
+    divisionLabel: "Windows & Patio Doors",
+    brand: "Mira Premium",
+    description: "Stainless steel dual-locking strike keeper designed to anchor locking hooks on Mira Premium series sliding doors to maximize forced-entry resistance.",
+    weight: 0.6,
+    cost: 14.25,
+    material: "Hardened Stainless Steel",
+    finish: "Zinc-Plated Natural Silver",
+    specs: [
+      { label: "Overall Length", value: "4-5/8 inches" },
+      { label: "Hole Centers", value: "4-1/16 inches" },
+      { label: "Lock Projection", value: "0.187 inches adjustable" },
+      { label: "Security Certified", value: "Forced Entry Certified Level 10" }
+    ],
+    svgBlueprint: Blueprints.camLock,
+    category: "Windows & Doors",
+    subCategory: "Hardware Assemblies",
+    materialComposition: "Hardened Stainless Steel",
+    colors: ["Zinc Plated Finish"],
+    compatibility: "Requires #8 x 1-1/4\" Flat Head Security Screws",
+    compliance: "Grade 40 Forced Entry Resistance Certified"
+  },
+  {
+    id: "HP3MAX-GP",
+    name: "Mira Premium HP3Max Insulated Glass Package",
+    division: "windows",
+    divisionLabel: "Windows & Patio Doors",
+    brand: "Mira Premium",
+    description: "High-performance triple-glazing insulated glass package featuring Low-E coating, warm-edge spacers, and Argon insulating gas fill for maximum Energy Star thermal ratings.",
+    weight: 38.5,
+    cost: 185.00,
+    material: "Dual Low-E Glass & Argon Gas",
+    finish: "Clear Low-E Tint",
+    specs: [
+      { label: "Insulating Fill", value: "90% Argon Gas Filled" },
+      { label: "NFRC U-Factor", value: "0.22 BTU/h·ft²·°F (Low)" },
+      { label: "Solar Heat Gain (SHGC)", value: "0.21 (Optimized)" },
+      { label: "Visible Transmittance", value: "0.52 (High Clarity)" }
+    ],
+    svgBlueprint: Blueprints.insulatedPanel,
+    category: "Windows & Doors",
+    subCategory: "Glass Packages",
+    materialComposition: "Dual Low-E Coated Float Glass with Argon Gas Fill",
+    colors: ["Clear Low-E Tint"],
+    compatibility: "Direct fit for Mira Premium Series Window Sashes",
+    compliance: "ENERGY STAR® Version 7.0 Northern & North-Central Zone Certified"
+  },
+
+  // --- C. GUTTER & RAINWARE SYSTEMS (Leaf Relief & Performance Metals) ---
+  {
+    id: "APSN62",
+    name: "Leaf Relief 6\" Gutter Guard Access Panel",
+    division: "gutter",
+    divisionLabel: "Gutter & Rainware Solutions",
+    brand: "Leaf Relief",
+    description: "Removable perforated access panel for Leaf Relief gutter systems, allowing for quick cleaning, washing, and downspout maintenance access.",
+    weight: 0.8,
+    cost: 12.90,
+    material: "Perforated Hardened Aluminum",
+    finish: "Alodine Mill Corrosion Proof Finish",
+    specs: [
+      { label: "Panel Cover Width", value: "6.0 inches" },
+      { label: "Panel Length", value: "12.0 inches" },
+      { label: "Hole Diameter", value: "1/16\" Perforations" },
+      { label: "Water Siphoning Rate", value: "Up to 29\" rain/hr" }
+    ],
+    svgBlueprint: Blueprints.gutterHanger,
+    category: "Gutter Systems",
+    subCategory: "Gutter Accessories",
+    materialComposition: "High-Grade Hardened Aluminum",
+    colors: ["Mill Finish", "Classic Copper", "Musket Brown"],
+    compatibility: "Requires #8-18 x 1/2\" Self-Piercing Screws",
+    compliance: "ASTM B209 Aluminum Sheet Standard"
+  },
+  {
+    id: "IC6220",
+    name: "Leaf Relief 6\" Inside Corner Mitre Guard",
+    division: "gutter",
+    divisionLabel: "Gutter & Rainware Solutions",
+    brand: "Leaf Relief",
+    description: "Pre-fabricated 90-degree inside corner miter piece featuring Leaf Relief perforated design to secure gutter junctions against debris entry.",
+    weight: 1.1,
+    cost: 16.50,
+    material: "Formed 0.019\" Aluminum",
+    finish: "Baked-on Enamel Solid Color",
+    specs: [
+      { label: "Gutter Fitting Size", value: "6.0 inches" },
+      { label: "Pre-fabricated Angle", value: "90 Degree Inside Corner" },
+      { label: "Water Drainage Area", value: "14.5 sq inches" }
+    ],
+    svgBlueprint: Blueprints.stoneCorner,
+    category: "Gutter Systems",
+    subCategory: "Gutter Accessories",
+    materialComposition: "Formed 0.019\" Painted Aluminum",
+    colors: ["White", "Musket Brown", "Evergreen"],
+    compatibility: "Requires 1/8\" Pop Rivets or Gutter Sealant",
+    compliance: "ASTM B209 Standard Class 1A"
+  },
+  {
+    id: "ISM6",
+    name: "Performance Metals 6\" Inside Bay Gutter Miter",
+    division: "gutter",
+    divisionLabel: "Gutter & Rainware Solutions",
+    brand: "Performance Metals",
+    description: "Factory-formed inside bay corner miter for 6-inch K-style gutter systems, ensuring watertight joints and seamless transition profiles.",
+    weight: 1.3,
+    cost: 18.20,
+    material: "Architectural Aluminum",
+    finish: "Polyester Clay Paint Finish",
+    specs: [
+      { label: "Gutter Profile", value: "Standard K-Style" },
+      { label: "Miter Dimension", value: "6 inches" },
+      { label: "Seaming Joint Gap", value: "0.062\" overlap tolerance" }
+    ],
+    svgBlueprint: Blueprints.ridgeCap,
+    category: "Gutter Systems",
+    subCategory: "Gutter Accessories",
+    materialComposition: "0.027\" Architectural Aluminum",
+    colors: ["Evergreen", "Musket Brown", "Pebblestone Clay"],
+    compatibility: "Requires 1/8\" Pop Rivets and Gutter Caulking Sealant",
+    compliance: "AAMA 1405.1 Compliant"
+  },
+  {
+    id: "AM5HID",
+    name: "Performance Metals 5\" Hidden Gutter Hanger",
+    division: "gutter",
+    divisionLabel: "Gutter & Rainware Solutions",
+    brand: "Performance Metals",
+    description: "Heavy-gauge extruded aluminum internal hidden gutter hanger clip equipped with a preloaded high-load structural screw.",
+    weight: 0.25,
+    cost: 2.10,
+    material: "Extruded Structural Aluminum",
+    finish: "Natural Unpainted Mill Finish",
+    specs: [
+      { label: "Hanger Size Fit", value: "5.0 inches" },
+      { label: "Standard Fastener", value: "Pre-loaded #10 x 3\" Type 17 Screw" },
+      { label: "Load Capacity", value: "ASTM Class 4: 250 lbs per hanger" }
+    ],
+    svgBlueprint: Blueprints.starterStrip,
+    category: "Gutter Systems",
+    subCategory: "Gutter Accessories",
+    materialComposition: "Heavy-Gauge Extruded Aluminum",
+    colors: ["Mill Finish"],
+    compatibility: "Requires #10 x 3\" High-Load Wood Screws (included)",
+    compliance: "ASTM B221 Extrusion Standard"
+  },
+
+  // --- D. FENCING & RAILING COMPONENTS (Ply Gem Fence & Rail) ---
+  {
+    id: "FNC-POST",
+    name: "Ply Gem Fence Standard Routed Privacy Post",
+    division: "fencing",
+    divisionLabel: "Fencing & Railing Components",
+    brand: "Ply Gem",
+    description: "Standard routed square vinyl post designed to support vinyl interlocking privacy rails and privacy panels with high UV resistance.",
+    weight: 12.5,
+    cost: 42.00,
+    material: "Structural Vinyl (PVC)",
+    finish: "UV-Stabilized Smooth Matte",
+    specs: [
+      { label: "Post Dimensions", value: "5.0\" x 5.0\" Square" },
+      { label: "Overall Length", value: "8 feet 0 inches" },
+      { label: "Wall Thickness", value: "0.135 inches (Heavy Duty)" }
+    ],
+    svgBlueprint: Blueprints.fencePost,
+    category: "Fencing",
+    subCategory: "Post Profiles & Accessories",
+    materialComposition: "UV-Stabilized Structural Vinyl (PVC)",
+    colors: ["Khaki", "Almond", "White"],
+    compatibility: "Requires standard classic cap trims and interlocking pickets",
+    compliance: "ASTM F964 Structural Vinyl Standard"
+  },
+  {
+    id: "FNC-CAP-GOTHIC",
+    name: "Ply Gem Fence Gothic Post Cap Accent",
+    division: "fencing",
+    divisionLabel: "Fencing & Railing Components",
+    brand: "Ply Gem",
+    description: "Architectural gothic curve post cap engineered to fit 5x5 structural posts and protect post interiors from rain accumulation.",
+    weight: 0.8,
+    cost: 9.50,
+    material: "High-Impact Vinyl (PVC)",
+    finish: "Smooth Solid Tone Finish",
+    specs: [
+      { label: "Cap Base Size", value: "5.0\" x 5.0\" Post Fit" },
+      { label: "Overall Height", value: "6.5 inches" },
+      { label: "Overlap Lip Gap", value: "1.0 inch fitting overlap" }
+    ],
+    svgBlueprint: Blueprints.ridgeCap,
+    category: "Fencing",
+    subCategory: "Post Profiles & Accessories",
+    materialComposition: "High-Impact UV-Stable Vinyl",
+    colors: ["Khaki", "Almond", "Aged Cedar"],
+    compatibility: "Requires PVC Solvent Weld Cement or friction-fit placement",
+    compliance: "ASTM F964 Certified"
+  },
+  {
+    id: "FNC-PCKT-TG",
+    name: "Ply Gem Fence Tongue & Groove 1x8 Picket",
+    division: "fencing",
+    divisionLabel: "Fencing & Railing Components",
+    brand: "Ply Gem",
+    description: "Heavy-duty co-extruded interlocking tongue & groove picket panel for vinyl privacy fencing systems.",
+    weight: 3.4,
+    cost: 11.20,
+    material: "Co-Extruded Rigid PVC",
+    finish: "Woodgrain Cedar-Embossed finish",
+    specs: [
+      { label: "Picket Dimensions", value: "7/8\" x 11.3\" Profile" },
+      { label: "Segment Length", value: "5 feet 0 inches" },
+      { label: "Lock Design", value: "Interlocking Tongue & Groove" }
+    ],
+    svgBlueprint: Blueprints.vinylSiding,
+    category: "Fencing",
+    subCategory: "Picket Profiles",
+    materialComposition: "Heavy-Duty Co-Extruded PVC",
+    colors: ["Khaki", "Almond", "Aged Cedar"],
+    compatibility: "Requires structural bottom rails and standard posts",
+    compliance: "ASTM F964 Class A Impact Certified"
+  },
+  {
+    id: "FNC-HW-ZLOKK",
+    name: "D&D Gate Hardware Z-Lokk Magnetic Lockable Latch",
+    division: "fencing",
+    divisionLabel: "Fencing & Railing Components",
+    brand: "D&D Hardware",
+    description: "High-tech key-lockable magnetic latch assembly featuring dual 6-pin locks and an ergonomicADA-compliant gate pull handle.",
+    weight: 2.8,
+    cost: 89.00,
+    material: "Fiber-Reinforced Polymer",
+    finish: "Satin Jet Black Finish",
+    specs: [
+      { label: "Post-to-Gate Gap", value: "3/8\" to 1-1/2\" range" },
+      { label: "Key Cylinder Type", value: "Dual 6-pin re-keyable brass locks" },
+      { label: "Magnetic Latch force", value: "Tested up to 10,000 cycles" }
+    ],
+    svgBlueprint: Blueprints.camLock,
+    category: "Fencing",
+    subCategory: "Gate Hardware",
+    materialComposition: "Engineered Polymer Body & Stainless Steel Lock Core",
+    colors: ["Jet Black Matte"],
+    compatibility: "Requires standard self-closing hinges and flat or routed vinyl posts",
+    compliance: "ADA Compliant Gate Access standard"
+  },
+
+  // --- E. TECHNICAL FASTENERS & INSTALLATION SUPPLIES ---
+  {
+    id: "27848655-C",
+    name: "Ply Gem Cortex Screws with Plugs",
+    division: "fasteners",
+    divisionLabel: "Technical Fasteners",
+    brand: "Ply Gem",
+    description: "Precision ACQ-approved corrosion proof face-screws provided with matching plug caps in smooth or woodgrain finish to conceal fastener heads in trim boards.",
+    weight: 4.2,
+    cost: 48.00,
+    material: "Corrosion Proof Steel / Vinyl plugs",
+    finish: "ACQ-Approved Rust Coating",
+    specs: [
+      { label: "Screw Length", value: "2-3/4 inches" },
+      { label: "Thread Diameter", value: "#10 Gauge Core" },
+      { label: "Plugs Included", value: "224 Screws / 300 Plugs / 2 Torx bits" }
+    ],
+    svgBlueprint: Blueprints.cortexScrew,
+    category: "Fasteners",
+    subCategory: "Screws & Rivets",
+    materialComposition: "ACQ Rust-Resistant Carbon Steel with matching PVC Plugs",
+    colors: ["Woodgrain Pebble Clay Plugs", "Smooth Sandalwood Plugs", "White Plugs"],
+    compatibility: "Requires Ply Gem Cortex Torx Setting tool (included)",
+    compliance: "ASTM B117 Salt Spray Standard"
+  },
+  {
+    id: "HEX-915-GASKET",
+    name: "Performance Metals #9 x 1-1/2\" Hex-Head Coated Gasket Screw",
+    division: "fasteners",
+    divisionLabel: "Technical Fasteners",
+    brand: "Performance Metals",
+    description: "High-grade carbon steel self-piercing hex head wood screw featuring an EPDM rubber washer gasket for watertight sealing in metal roofing/siding installations.",
+    weight: 0.05,
+    cost: 0.15,
+    material: "Heat-Treated Steel & EPDM",
+    finish: "Evergreen Polyester Coated Cap",
+    specs: [
+      { label: "Screw Length", value: "1-1/2 inches" },
+      { label: "Thread Size", value: "#9 Gauge" },
+      { label: "Hex Drive Head", value: "1/4\" Hex Nut Runner" }
+    ],
+    svgBlueprint: Blueprints.cortexScrew,
+    category: "Fasteners",
+    subCategory: "Screws & Rivets",
+    materialComposition: "Heat-Treated Carbon Steel with EPDM Rubber Washer",
+    colors: ["Evergreen Cap", "Musket Brown Cap", "Mill Finish Zinc"],
+    compatibility: "Requires 1/4\" Hex Nut Runner setting driver",
+    compliance: "ASTM F593 Corrosion Proof Standard"
+  },
+
+  // --- METAL & COMMERCIAL solutions (retained) ---
   {
     id: "MTL-ROF-201",
     name: "MBCI Lok-Seam Standing Seam Metal Roof Panel",
     division: "metal",
-    divisionLabel: "Metal & Commercial Solutions",
+    divisionLabel: "Metal Roofing & Walls",
     brand: "MBCI",
     description: "Architectural-grade snap-together standing seam structural steel roofing panel. Features factory-applied sealant, 1.75\" seam ribs, and concealed fastening clip flanges.",
     weight: 17.5,
@@ -794,17 +1207,21 @@ const INITIAL_PARTS: Part[] = [
       { label: "Steel Sheet Thickness", value: "24 Gauge (Premium)" },
       { label: "Cover Width", value: "16.0 inches" },
       { label: "Rib Seam Height", value: "1.75 inches" },
-      { label: "Standard Panel Length", value: "10 feet (Shippable)" },
-      { label: "Yield Strength Rating", value: "50,000 PSI structural" },
-      { label: "UL Fire/Impact Class", value: "Class A Fire / Class 4 Hail" }
+      { label: "Standard Panel Length", value: "10 feet (Shippable)" }
     ],
-    svgBlueprint: Blueprints.standingSeam
+    svgBlueprint: Blueprints.standingSeam,
+    category: "Metal Roofing",
+    subCategory: "Roof Panels",
+    materialComposition: "High-Tensile Galvalume Steel",
+    colors: ["Slate Grey", "Cornerstone Navy", "Forest Green"],
+    compatibility: "Requires #9 x 1-1/2\" Hex-Head Coated Gasket Screws",
+    compliance: "ASTM A653 / UL Fire Class A"
   },
   {
     id: "MTL-WAL-202",
     name: "Metl-Span CF Insulated Metal Architectural Wall Panel",
     division: "metal",
-    divisionLabel: "Metal & Commercial Solutions",
+    divisionLabel: "Metal Roofing & Walls",
     brand: "Metl-Span",
     description: "Commercial architectural exterior insulated sandwich panel. Features high-performance polyurethane core bonded between 26-gauge Galvalume steel skins with a thermal-break dry joint.",
     weight: 41.2,
@@ -814,18 +1231,21 @@ const INITIAL_PARTS: Part[] = [
     specs: [
       { label: "Panel Cover Width", value: "42.0 inches" },
       { label: "Insulating Core Thick.", value: "3.0 inches" },
-      { label: "Overall Panel Length", value: "8 feet (Segment)" },
-      { label: "R-Value Thermal Resist.", value: "R-22.5 BTU/h·ft²·°F" },
-      { label: "Inner Skin Thickness", value: "26 Gauge Galvalume" },
-      { label: "Side Joint Seal", value: "Double tongue & groove vinyl gasket" }
+      { label: "Overall Panel Length", value: "8 feet (Segment)" }
     ],
-    svgBlueprint: Blueprints.insulatedPanel
+    svgBlueprint: Blueprints.insulatedPanel,
+    category: "Metal Roofing",
+    subCategory: "Wall Panels",
+    materialComposition: "PU Foam Core / Galvalume Steel",
+    colors: ["Sandstone", "Alabaster White"],
+    compatibility: "Requires heavy duty structural attachment clips",
+    compliance: "ASTM E84 Class 1 Fire Spread"
   },
   {
     id: "MTL-STR-203",
     name: "Star Building Systems Structural Z-Purlin Member",
     division: "metal",
-    divisionLabel: "Metal & Commercial Solutions",
+    divisionLabel: "Metal Roofing & Walls",
     brand: "Star Building Systems",
     description: "Heavy-duty cold-formed secondary structural steel Z-member. Engineered to span between main portal rigid frames to support metal roof panel fast clips.",
     weight: 48.5,
@@ -835,18 +1255,21 @@ const INITIAL_PARTS: Part[] = [
     specs: [
       { label: "Web Depth (Height)", value: "8.0 inches" },
       { label: "Steel Base Thickness", value: "14 Gauge (0.075\")" },
-      { label: "Overall Length", value: "12 feet" },
-      { label: "Steel Grade Rating", value: "ASTM A653 Grade 55" },
-      { label: "Mounting Flange Widths", value: "2.5\" top flange / 2.25\" bot flange" },
-      { label: "Lap Splice Capability", value: "Standard 2.0' lap overlapping holes" }
+      { label: "Overall Length", value: "12 feet" }
     ],
-    svgBlueprint: Blueprints.zPurlin
+    svgBlueprint: Blueprints.zPurlin,
+    category: "Metal Roofing",
+    subCategory: "Structural Framing",
+    materialComposition: "Cold-Formed High-Strength Steel",
+    colors: ["Mill Galvanized Silver"],
+    compatibility: "Requires 1/2\" structural grade A325 bolts",
+    compliance: "ASTM A653 Grade 55 structural standard"
   },
   {
     id: "MTL-ACC-204",
     name: "MBCI Pre-Formed Peaked Ridge Cap Flashing Trim",
     division: "metal",
-    divisionLabel: "Metal & Commercial Solutions",
+    divisionLabel: "Metal Roofing & Walls",
     brand: "MBCI",
     description: "Premium heavy-duty ridge flashing, pre-peaked to cover standing seam peaks. Designed with water-safety returned hems and weather seal compression lines.",
     weight: 6.8,
@@ -856,12 +1279,15 @@ const INITIAL_PARTS: Part[] = [
     specs: [
       { label: "Steel Gauge Thickness", value: "26 Gauge" },
       { label: "Flat Sheet Width", value: "12.0 inches (Girth)" },
-      { label: "Peak Angle Profile", value: "120 Degrees (Peaked)" },
-      { label: "Trim Segment Length", value: "10 feet 0 inches" },
-      { label: "Side Safety Returned Hem", value: "0.50\" returned safety drip edge" },
-      { label: "Substrate Coating Spec", value: "AZ50 Galvalume Alloy" }
+      { label: "Peak Angle Profile", value: "120 Degrees (Peaked)" }
     ],
-    svgBlueprint: Blueprints.ridgeCap
+    svgBlueprint: Blueprints.ridgeCap,
+    category: "Metal Roofing",
+    subCategory: "Trim Accessories",
+    materialComposition: "Prepainted Galvalume Carbon Steel",
+    colors: ["Navy Blue", "Slate Grey", "Forest Green"],
+    compatibility: "Requires #9 x 1-1/2\" Hex-Head Coated Gasket Screws",
+    compliance: "AZ50 Galvalume Alloy ASTM"
   }
 ]
 
@@ -993,7 +1419,12 @@ export default function Home() {
         part.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         part.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         part.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        part.divisionLabel.toLowerCase().includes(searchQuery.toLowerCase())
+        part.divisionLabel.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (part.category && part.category.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (part.subCategory && part.subCategory.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (part.materialComposition && part.materialComposition.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (part.compliance && part.compliance.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (part.colors && part.colors.some(c => c.toLowerCase().includes(searchQuery.toLowerCase())))
       
       const matchesDivision = activeDivision === "all" || part.division === activeDivision
 
@@ -1404,8 +1835,11 @@ export default function Home() {
               <div className="flex flex-wrap gap-2 mb-5">
                 {[
                   { id: "all", label: "All Exterior Systems" },
-                  { id: "siding", label: "Siding & Stone" },
-                  { id: "windows", label: "Windows & Patio Doors" },
+                  { id: "siding", label: "Siding, Stone & Trim" },
+                  { id: "windows", label: "Windows & Doors" },
+                  { id: "gutter", label: "Gutter & Rainware" },
+                  { id: "fencing", label: "Fencing & Railing" },
+                  { id: "fasteners", label: "Technical Fasteners" },
                   { id: "metal", label: "Metal Roofing & Walls" },
                   { id: "custom", label: "Custom Configured" }
                 ].map((div) => (
@@ -2052,6 +2486,37 @@ export default function Home() {
                     <span className="text-slate-400 font-mono text-[10px] uppercase font-semibold">Unit List Price:</span>
                     <span className="text-emerald-600 font-mono font-bold text-right">${selectedPart.cost.toFixed(2)}</span>
                   </div>
+                  
+                  {selectedPart.category && (
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-400 font-mono text-[10px] uppercase font-semibold">Category:</span>
+                      <span className="text-slate-700 text-right font-medium">{selectedPart.category} ({selectedPart.subCategory})</span>
+                    </div>
+                  )}
+                  {selectedPart.materialComposition && (
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-400 font-mono text-[10px] uppercase font-semibold">Composition:</span>
+                      <span className="text-slate-700 text-right font-medium">{selectedPart.materialComposition}</span>
+                    </div>
+                  )}
+                  {selectedPart.colors && selectedPart.colors.length > 0 && (
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-400 font-mono text-[10px] uppercase font-semibold">Colors/Finishes:</span>
+                      <span className="text-slate-700 text-right font-medium text-[10px]">{selectedPart.colors.join(", ")}</span>
+                    </div>
+                  )}
+                  {selectedPart.compatibility && (
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-400 font-mono text-[10px] uppercase font-semibold">Compatibility:</span>
+                      <span className="text-slate-700 text-right font-medium text-[10px] text-indigo-700 font-semibold">{selectedPart.compatibility}</span>
+                    </div>
+                  )}
+                  {selectedPart.compliance && (
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-400 font-mono text-[10px] uppercase font-semibold">Compliance Rating:</span>
+                      <span className="text-blue-700 text-right font-mono font-bold text-[10px] bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">{selectedPart.compliance}</span>
+                    </div>
+                  )}
                   
                   {/* Detailed specific parameters */}
                   <div className="pt-2">
