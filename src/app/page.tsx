@@ -991,8 +991,8 @@ export default function Home() {
     setBom(prev => prev.map(item => item.part.id === partId ? { ...item, quantity } : item))
   }
 
-  // Simulated AI response triggering on prompt template or custom search
-  const handleSendMessage = (textToSend?: string, attachedImg?: string) => {
+  // Real-time Vertex AI Grounded Chat integration
+  const handleSendMessage = async (textToSend?: string, attachedImg?: string) => {
     const query = textToSend || chatInput
     const img = attachedImg || uploadedImage
     if (!query.trim() && !img) return
@@ -1005,75 +1005,51 @@ export default function Home() {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
 
+    const currentHistory = [...chatMessages];
+
     setChatMessages(prev => [...prev, userMsg])
     if (!textToSend) setChatInput("")
     setUploadedImage(null) // clear local upload image buffer
     setIsAiTyping(true)
 
-    // Generate response matching actual structural and thermal engineering formulas
-    setTimeout(() => {
-      let responseText = ""
-      let codeSnippet = ""
-      let tableData: { label: string; value: string }[] | undefined = undefined
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, history: currentHistory })
+      });
 
-      const norm = query.toLowerCase()
+      if (!response.ok) {
+        throw new Error('API server returned error status');
+      }
 
-      if (img) {
-        responseText = `### 👁️ Gemini Multimodal Vision Scan & Analysis\nI have successfully scanned and performed a digital laser cross-section analysis on your uploaded component photograph.\n\n**Visual Inspection Report:**\n*   **Profile detected:** Premium Double 4" Vinyl Siding panel or customized drip-edge fabrication trim.\n*   **Extrusion Integrity:** Mechanical folding and dimensional return channels match standard Cornerstone v7.0 CAD specifications.\n*   **Surface Finishes:** High-adhesion electrostatic coating verified with no micro-fractures, delamination, or polymer blistering.\n*   **Anchor perforations:** Perforation spacing conforms to ASTM guidelines (spaced exactly 12" margins for structural screw alignment).\n\n**Engineering Recommendation:**\nThis component is highly certified for wind-load resistances of up to **-55 psf**. Ensure high-strength galvanized roofing fasteners are used for wall frame integration.`
-        tableData = [
-          { label: "Detected Profile", value: "D-4 Vinyl / Metal Drip Edge" },
-          { label: "Visual Adhesion Quality", value: "Class 5B (Excellent)" },
-          { label: "Calculated Wind Limit", value: "Up to -55 psf (Passes)" },
-          { label: "Mounting Margin", value: "12\" o.c. (ASTM standard)" },
-          { label: "Deformation Factor", value: "None Detected (<0.012mm)" }
-        ]
-      } else if (norm.includes("siding") || norm.includes("wind") || norm.includes("pressure") || norm.includes("hurricane")) {
-        responseText = "### Siding Wind Resistance Technical Report\nBased on your prompt constraints of a **130 mph design wind speed (Category III Hurricane Zone)**, the siding cladding assembly must withstand specific negative pressure wind loads.\n\nAccording to **ASCE 7-22 (Minimum Design Loads for Buildings)**, the design wind pressure $P$ is computed based on Exposure Category C, building height, and localized wall zone factors.\n\nFor an average wall height of 30 feet, a 130 mph wind generates a localized negative design pressure of approximately **-28.5 psf** (pounds per square foot) on standard wall zones, rising up to **-44.2 psf** at building corner zones (Zone 5).\n\n**Mastic Quest Double 4\" Vinyl Siding** has been meticulously tested under ASTM D5206 and is certified up to a maximum load of **-62.5 psf** (representing 240 mph safety margins), when installed using G90 steel starter strips and fastener spacings of 16\" on-center. It meets and exceeds these design requirements by a comfortable safety margin."
-        tableData = [
-          { label: "Design Wind Velocity", value: "130 mph" },
-          { label: "Wall Zone 4 Design Pressure", value: "-28.5 psf" },
-          { label: "Wall Zone 5 (Corner) Pressure", value: "-44.2 psf" },
-          { label: "Mastic Quest Test Capacity", value: "-62.5 psf (ASTM D5206)" },
-          { label: "Corner Safety Factor", value: "1.41 (Passed)" },
-          { label: "Fastener Requirement", value: "8d Ring-Shank Nails spaced 16\" o.c." }
-        ]
-      } else if (norm.includes("window") || norm.includes("thermal") || norm.includes("energy") || norm.includes("u-factor") || norm.includes("star")) {
-        responseText = "### Simonton DaylightMax Glazing thermal Analysis\nYes, the **Simonton DaylightMax Double-Hung Window Sash** meets and qualifies for the rigorous **Energy Star Version 7.0 Northern Zone** standards. \n\nLet's evaluate the thermal transfer mechanics. In the Northern Zone, Energy Star 7.0 requires a maximum **U-Factor $\\le 0.22$** for windows with a Solar Heat Gain Coefficient (SHGC) of any value, or a **U-Factor of 0.23 - 0.24** with an $\\text{SHGC} \\ge 0.35$ (to utilize solar gain for cold climates).\n\nWhen customized with our dual-pane 1\" insulated Low-E glazing, multi-chamber uPVC structural chambers, and 90% Argon Gas fills, the Simonton DaylightMax delivers an NFRC-certified **U-Factor of 0.22 BTU/h·ft²·°F** and an **SHGC of 0.28**. This completely blocks conductive heat transfer during cold northern winters, retaining interior heat while allowing beautiful visible light transmission (VT: 0.52)."
-        tableData = [
-          { label: "Northern Zone Limit (ES 7.0)", value: "U-Factor <= 0.22" },
-          { label: "DaylightMax Certified U-Factor", value: "0.22 BTU/h·ft²·°F (Qualified)" },
-          { label: "Solar Heat Gain (SHGC)", value: "0.28 (Optimized)" },
-          { label: "Visible Transmittance (VT)", value: "0.52 (High Clarity)" },
-          { label: "Structural Rating", value: "AAMA LC-PG50" },
-          { label: "Gas Filling", value: "90% Argon Gas Seal" }
-        ]
-      } else if (norm.includes("seam") || norm.includes("purlin") || norm.includes("snow") || norm.includes("span") || norm.includes("spacing")) {
-        responseText = "### Commercial Roof Structural Span Tables\nFor a warehouse roof system clad with **MBCI 16\" Lok-Seam standing seam panels (24-gauge)** supporting a **30 psf live snow load** and **10 psf dead load** (total load: 40 psf), secondary framing spacing is calculated using the moment capacity of cold-formed steel and deflection criteria of L/180.\n\nUsing **Star Building Systems 8\" structural Z-purlins (14-gauge)** with ASTM A653 Grade 55 steel, we run structural flexure calculations. A single span purlin can safely support the 40 psf gravity load with a maximum spacing of **5 feet 0 inches on-center**, yielding a deflection of 0.38\" (which is less than the L/180 limit of 0.80\" across a standard 12-foot span). If snow drifts create localized pockets up to 50 psf, we recommend reducing the purlin spacing at the bays to **4 feet 0 inches on-center**."
-        tableData = [
-          { label: "Total Uniform Design Load", value: "40.0 psf" },
-          { label: "Purlin Height & Gauge", value: "8.0 inches (14 Gauge)" },
-          { label: "Purlin Span Length", value: "12 feet 0 inches" },
-          { label: "Max spacing (40 psf Load)", value: "5' 0\" On-Center" },
-          { label: "Max spacing (50 psf Drift)", value: "4' 0\" On-Center" },
-          { label: "Calculated Flexural stress", value: "22,500 PSI (Safe limit 33,000 PSI)" },
-          { label: "Deflection Ratio", value: "L/380 (Passed L/180 standard)" }
-        ]
-      } else {
-        responseText = "I've processed your custom architectural requirements. I recommend aligning this request with components like the **" + parts[0].name + "** or our high-grade **" + parts[6].name + "**. Let me know if you would like me to draft structural span load profiles, check window wind-load resistance, or evaluate local thermal coefficient compliance!"
+      const data = await response.json();
+
+      let text = data.text;
+      if (data.groundedSource) {
+        text += `\n\n---\n🛡️ **Answer grounded in official technical source:**\n👉 \`gs://conerstonepartlib/plygem/${data.groundedSource}\` (or corresponding folder)`;
       }
 
       const aiMsg: Message = {
         id: `a-${Date.now()}`,
         sender: "ai",
-        text: responseText,
-        codeSnippet,
-        tableData,
+        text: text,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
 
       setChatMessages(prev => [...prev, aiMsg])
+    } catch (error) {
+      console.error('Error in chat route:', error);
+      const errMsg: Message = {
+        id: `a-${Date.now()}`,
+        sender: "ai",
+        text: "⚠️ **Connection Error:** I encountered an issue querying the Vertex AI grounded endpoint. Please make sure the backend is active or try a different query.",
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+      setChatMessages(prev => [...prev, errMsg])
+    } finally {
       setIsAiTyping(false)
-    }, 1500)
+    }
   }
 
   // Interactive sheet metal trim fabrication sequence simulations
