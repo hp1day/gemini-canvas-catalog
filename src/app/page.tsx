@@ -2465,7 +2465,8 @@ export default function Home() {
                             <button
                               key={style.id}
                               onClick={() => {
-                                if (fabricateStep !== -1) return
+                                if (fabricateStep >= 0 && fabricateStep <= 6) return
+                                if (fabricateStep === 7) setFabricateStep(-1)
                                 setTrimProfile(style.id as any)
                               }}
                               className={`py-2 px-1 rounded-lg border text-center transition-all cursor-pointer shadow-sm ${
@@ -2493,7 +2494,8 @@ export default function Home() {
                           step="1"
                           value={trimLength}
                           onChange={(e) => {
-                            if (fabricateStep !== -1) return
+                            if (fabricateStep >= 0 && fabricateStep <= 6) return
+                            if (fabricateStep === 7) setFabricateStep(-1)
                             setTrimLength(parseInt(e.target.value))
                           }}
                           className="w-full accent-purple-600 bg-slate-200 h-1 rounded-lg cursor-pointer"
@@ -2512,7 +2514,8 @@ export default function Home() {
                           <select
                             value={trimGauge}
                             onChange={(e) => {
-                              if (fabricateStep !== -1) return
+                              if (fabricateStep >= 0 && fabricateStep <= 6) return
+                              if (fabricateStep === 7) setFabricateStep(-1)
                               setTrimGauge(e.target.value)
                             }}
                             className="bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-700 focus:outline-none focus:border-purple-600 w-full shadow-sm cursor-pointer"
@@ -2529,7 +2532,8 @@ export default function Home() {
                           <select
                             value={trimMaterial}
                             onChange={(e) => {
-                              if (fabricateStep !== -1) return
+                              if (fabricateStep >= 0 && fabricateStep <= 6) return
+                              if (fabricateStep === 7) setFabricateStep(-1)
                               setTrimMaterial(e.target.value)
                             }}
                             className="bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-700 focus:outline-none focus:border-purple-600 w-full shadow-sm cursor-pointer"
@@ -2556,7 +2560,8 @@ export default function Home() {
                             <button
                               key={col.name}
                               onClick={() => {
-                                if (fabricateStep !== -1) return
+                                if (fabricateStep >= 0 && fabricateStep <= 6) return
+                                if (fabricateStep === 7) setFabricateStep(-1)
                                 setTrimColor(col.name)
                               }}
                               className={`p-1.5 rounded-lg border text-center transition-all cursor-pointer shadow-sm ${
