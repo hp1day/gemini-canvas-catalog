@@ -34,7 +34,8 @@ import {
   Building2,
   Download,
   Maximize2,
-  Package
+  Package,
+  Image
 } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, CardAction } from "@/components/ui/card"
@@ -752,6 +753,7 @@ interface Message {
   timestamp: string
   codeSnippet?: string
   tableData?: { label: string; value: string }[]
+  imageUrl?: string // To support rendering of uploaded images inside the workspace
 }
 
 export default function Home() {
@@ -784,6 +786,7 @@ export default function Home() {
   ])
   const [chatInput, setChatInput] = useState("")
   const [isAiTyping, setIsAiTyping] = useState(false)
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null) // New image upload state
 
   // Custom Flashing/Trim Configurator State
   const [trimProfile, setTrimProfile] = useState<"j-channel" | "corner-post" | "ridge-cap" | "drip-edge" | "u-trim">("j-channel")
@@ -963,19 +966,22 @@ export default function Home() {
   }
 
   // Simulated AI response triggering on prompt template or custom search
-  const handleSendMessage = (textToSend?: string) => {
+  const handleSendMessage = (textToSend?: string, attachedImg?: string) => {
     const query = textToSend || chatInput
-    if (!query.trim()) return
+    const img = attachedImg || uploadedImage
+    if (!query.trim() && !img) return
 
     const userMsg: Message = {
       id: `u-${Date.now()}`,
       sender: "user",
-      text: query,
+      text: query || "Uploaded image for technical specification scanning.",
+      imageUrl: img || undefined,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
 
     setChatMessages(prev => [...prev, userMsg])
     if (!textToSend) setChatInput("")
+    setUploadedImage(null) // clear local upload image buffer
     setIsAiTyping(true)
 
     // Generate response matching actual structural and thermal engineering formulas
@@ -986,7 +992,16 @@ export default function Home() {
 
       const norm = query.toLowerCase()
 
-      if (norm.includes("siding") || norm.includes("wind") || norm.includes("pressure") || norm.includes("hurricane")) {
+      if (img) {
+        responseText = `### 👁️ Gemini Multimodal Vision Scan & Analysis\nI have successfully scanned and performed a digital laser cross-section analysis on your uploaded component photograph.\n\n**Visual Inspection Report:**\n*   **Profile detected:** Premium Double 4" Vinyl Siding panel or customized drip-edge fabrication trim.\n*   **Extrusion Integrity:** Mechanical folding and dimensional return channels match standard Cornerstone v7.0 CAD specifications.\n*   **Surface Finishes:** High-adhesion electrostatic coating verified with no micro-fractures, delamination, or polymer blistering.\n*   **Anchor perforations:** Perforation spacing conforms to ASTM guidelines (spaced exactly 12" margins for structural screw alignment).\n\n**Engineering Recommendation:**\nThis component is highly certified for wind-load resistances of up to **-55 psf**. Ensure high-strength galvanized roofing fasteners are used for wall frame integration.`
+        tableData = [
+          { label: "Detected Profile", value: "D-4 Vinyl / Metal Drip Edge" },
+          { label: "Visual Adhesion Quality", value: "Class 5B (Excellent)" },
+          { label: "Calculated Wind Limit", value: "Up to -55 psf (Passes)" },
+          { label: "Mounting Margin", value: "12\" o.c. (ASTM standard)" },
+          { label: "Deformation Factor", value: "None Detected (<0.012mm)" }
+        ]
+      } else if (norm.includes("siding") || norm.includes("wind") || norm.includes("pressure") || norm.includes("hurricane")) {
         responseText = "### Siding Wind Resistance Technical Report\nBased on your prompt constraints of a **130 mph design wind speed (Category III Hurricane Zone)**, the siding cladding assembly must withstand specific negative pressure wind loads.\n\nAccording to **ASCE 7-22 (Minimum Design Loads for Buildings)**, the design wind pressure $P$ is computed based on Exposure Category C, building height, and localized wall zone factors.\n\nFor an average wall height of 30 feet, a 130 mph wind generates a localized negative design pressure of approximately **-28.5 psf** (pounds per square foot) on standard wall zones, rising up to **-44.2 psf** at building corner zones (Zone 5).\n\n**Mastic Quest Double 4\" Vinyl Siding** has been meticulously tested under ASTM D5206 and is certified up to a maximum load of **-62.5 psf** (representing 240 mph safety margins), when installed using G90 steel starter strips and fastener spacings of 16\" on-center. It meets and exceeds these design requirements by a comfortable safety margin."
         tableData = [
           { label: "Design Wind Velocity", value: "130 mph" },
@@ -1702,6 +1717,12 @@ export default function Home() {
                             ? "bg-blue-600 text-white font-medium shadow-sm shadow-blue-600/10" 
                             : "bg-white text-slate-800 border border-slate-200 shadow-sm"
                         }`}>
+                          {/* Render image inside bubble if present */}
+                          {msg.imageUrl && (
+                            <div className="relative rounded-lg overflow-hidden border border-slate-100 max-h-48 max-w-sm mb-2 shadow-sm bg-slate-100 shrink-0">
+                              <img src={msg.imageUrl} alt="Uploaded component photographs" className="object-contain max-h-48 w-full" />
+                            </div>
+                          )}
                           <div className="whitespace-pre-line text-[11.5px] font-sans prose prose-slate max-w-none">
                             {msg.text}
                           </div>
@@ -1739,7 +1760,7 @@ export default function Home() {
                         </div>
                         <div className="bg-white rounded-xl px-4 py-3 text-slate-500 italic border border-slate-200 shadow-sm">
                           <span className="flex items-center gap-1">
-                            Analyzing mechanical loads & searching exterior architectural standards...
+                            Analyzing mechanical loads & scanning structural photographs...
                           </span>
                         </div>
                       </div>
@@ -1747,25 +1768,70 @@ export default function Home() {
                   </div>
 
                   {/* Chat input box */}
-                  <div className="p-3 border-t border-slate-200 bg-slate-50/50">
+                  <div className="p-3 border-t border-slate-200 bg-slate-50/50 flex flex-col gap-2">
+                    
+                    {/* Uploaded image preview bar */}
+                    {uploadedImage && (
+                      <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 self-start text-[10px] text-slate-600 font-mono shadow-sm">
+                        <div className="h-8 w-8 rounded overflow-hidden border border-slate-100 bg-slate-50">
+                          <img src={uploadedImage} alt="Preview" className="object-cover h-full w-full" />
+                        </div>
+                        <span className="font-bold text-slate-700">Photo attached ready for Gemini scan</span>
+                        <button 
+                          type="button"
+                          onClick={() => setUploadedImage(null)}
+                          className="h-4.5 w-4.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-red-500 flex items-center justify-center font-bold text-[9px] ml-2 cursor-pointer border border-slate-100 bg-white shadow-sm"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    )}
+
                     <form 
                       onSubmit={(e) => {
                         e.preventDefault()
                         handleSendMessage()
                       }}
-                      className="flex gap-2"
+                      className="flex gap-2 items-center"
                     >
+                      {/* Hidden file input */}
+                      <input 
+                        type="file"
+                        accept="image/*"
+                        id="chat-image-upload"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            const reader = new FileReader()
+                            reader.onloadend = () => {
+                              setUploadedImage(reader.result as string)
+                            }
+                            reader.readAsDataURL(file)
+                          }
+                        }}
+                      />
+
+                      <Button 
+                        type="button"
+                        onClick={() => document.getElementById("chat-image-upload")?.click()}
+                        className="bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-500 hover:text-[#0f2d59] rounded-lg h-9.5 w-9.5 shrink-0 p-0 flex items-center justify-center cursor-pointer shadow-sm"
+                        title="Upload component photograph"
+                      >
+                        <Image className="h-4.5 w-4.5" />
+                      </Button>
+
                       <Input 
-                        placeholder="Ask about windload rating, thermal U-factor, purlin span spacing..."
+                        placeholder="Ask about windloads, thermal limits, or upload a photograph..."
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
-                        className="text-xs bg-white border-slate-200 text-slate-800 rounded-lg h-9.5 focus:border-[#0f2d59] placeholder:text-slate-400 shadow-sm"
+                        className="text-xs bg-white border-slate-200 text-slate-800 rounded-lg h-9.5 focus:border-[#0f2d59] placeholder:text-slate-400 shadow-sm flex-1"
                       />
                       <Button 
                         type="submit"
-                        className="bg-orange-600 hover:bg-orange-500 text-white rounded-lg h-9.5 px-4 cursor-pointer shadow-sm"
+                        className="bg-orange-600 hover:bg-orange-500 text-white rounded-lg h-9.5 px-4 cursor-pointer shadow-sm font-bold flex items-center gap-1 shrink-0"
                       >
-                        <Send className="h-4 w-4" />
+                        <Send className="h-4 w-4" /> Send
                       </Button>
                     </form>
                   </div>
