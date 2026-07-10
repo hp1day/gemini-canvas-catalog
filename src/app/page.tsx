@@ -1227,36 +1227,38 @@ export default function Home() {
               </TabsList>
 
               {/* Filtering & Sorting Controls inside Catalog view */}
-              <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-                <div className="relative flex-1 lg:flex-none">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-                  <Input 
-                    placeholder="Search parts, brands, specs..." 
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 h-8.5 text-xs bg-white border-slate-200 focus:border-[#0f2d59] rounded-lg text-slate-800 placeholder:text-slate-400 w-full lg:w-64 shadow-sm"
-                  />
-                </div>
+              {activeTab === "parts" && (
+                <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto animate-in fade-in duration-300">
+                  <div className="relative flex-1 lg:flex-none">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                    <Input 
+                      placeholder="Search parts, brands, specs..." 
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 h-8.5 text-xs bg-white border-slate-200 focus:border-[#0f2d59] rounded-lg text-slate-800 placeholder:text-slate-400 w-full lg:w-64 shadow-sm"
+                    />
+                  </div>
 
-                <div className="flex items-center gap-1 bg-slate-100 border border-slate-200 rounded-lg p-1">
-                  <Button 
-                    variant={viewMode === "grid" ? "default" : "ghost"}
-                    size="icon"
-                    onClick={() => setViewMode("grid")}
-                    className={`h-7.5 w-7.5 rounded transition-all ${viewMode === "grid" ? "bg-white border border-slate-200 text-[#0f2d59] shadow-sm font-bold" : "text-slate-500 hover:text-[#0f2d59]"}`}
-                  >
-                    <Grid className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button 
-                    variant={viewMode === "list" ? "default" : "ghost"}
-                    size="icon"
-                    onClick={() => setViewMode("list")}
-                    className={`h-7.5 w-7.5 rounded transition-all ${viewMode === "list" ? "bg-white border border-slate-200 text-[#0f2d59] shadow-sm font-bold" : "text-slate-500 hover:text-[#0f2d59]"}`}
-                  >
-                    <List className="h-3.5 w-3.5" />
-                  </Button>
+                  <div className="flex items-center gap-1 bg-slate-100 border border-slate-200 rounded-lg p-1">
+                    <Button 
+                      variant={viewMode === "grid" ? "default" : "ghost"}
+                      size="icon"
+                      onClick={() => setViewMode("grid")}
+                      className={`h-7.5 w-7.5 rounded transition-all ${viewMode === "grid" ? "bg-white border border-slate-200 text-[#0f2d59] shadow-sm font-bold" : "text-slate-500 hover:text-[#0f2d59]"}`}
+                    >
+                      <Grid className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button 
+                      variant={viewMode === "list" ? "default" : "ghost"}
+                      size="icon"
+                      onClick={() => setViewMode("list")}
+                      className={`h-7.5 w-7.5 rounded transition-all ${viewMode === "list" ? "bg-white border border-slate-200 text-[#0f2d59] shadow-sm font-bold" : "text-slate-500 hover:text-[#0f2d59]"}`}
+                    >
+                      <List className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* TAB 1: PRODUCT CATALOG GRID */}
@@ -1721,7 +1723,7 @@ export default function Home() {
                     msg.id === "m-1" ? (
                       <div key={msg.id} className="w-full bg-orange-50/40 border border-orange-200/50 rounded-xl p-4 shadow-sm flex flex-col gap-2 relative animate-in fade-in duration-300">
                         <div className="flex items-center gap-2 text-orange-800 font-extrabold text-xs uppercase font-mono tracking-wider">
-                          <Sparkles className="h-4 w-4 text-orange-600 animate-pulse" /> Specs & Engineering Instruction Frame
+                          <Sparkles className="h-4 w-4 text-orange-600 animate-pulse" /> Ask Me Anything
                         </div>
                         <p className="text-[11.5px] text-slate-700 leading-relaxed font-sans font-medium">
                           {msg.text}
