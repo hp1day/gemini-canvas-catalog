@@ -1370,6 +1370,11 @@ export default function Home() {
   const [pdfLoading, setPdfLoading] = useState(false)
   const [activePdfUrl, setActivePdfUrl] = useState<string | null>(null)
 
+  // Real-Time Business Dashboard Simulator State
+  const [markupPercent, setMarkupPercent] = useState<number>(20)
+  const [taxPercent, setTaxPercent] = useState<number>(8.25)
+  const [shippingRate, setShippingRate] = useState<number>(0.85)
+
   // CAD Canvas State
   const [blueprintZoom, setBlueprintZoom] = useState<number>(1)
   const [blueprintPan, setBlueprintPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
@@ -1389,6 +1394,21 @@ export default function Home() {
     setBlueprintZoom(1)
     setBlueprintPan({ x: 0, y: 0 })
   }, [selectedPart])
+
+  // Injects a high-fidelity sample cladding workload into the Bill of Materials
+  const injectSampleWorkload = () => {
+    const plyGemPart = parts.find(p => p.brand === "Ply Gem" || p.id.toLowerCase().includes("ply")) || parts[0]
+    const masticPart = parts.find(p => p.brand === "Mastic" || p.id.toLowerCase().includes("mas")) || parts[1] || parts[0]
+    const simontonPart = parts.find(p => p.brand === "Simonton" || p.id.toLowerCase().includes("sim")) || parts[2] || parts[0]
+
+    // Create a robust list of 3 premium elements with varying quantities
+    const sampleItems = [
+      { part: plyGemPart, quantity: 6 },
+      { part: masticPart, quantity: 25 },
+      { part: simontonPart, quantity: 2 }
+    ]
+    setBom(sampleItems)
+  }
 
   // Load dynamic GCS parts from Cloud Storage on app mount
   useEffect(() => {
@@ -1485,6 +1505,24 @@ export default function Home() {
     }
 
     return { totalWeight, totalCost, activeComponentsCount, logisticsType, logisticsDesc }
+  }, [bom])
+
+  // Segmented metrics by brand for chart representation
+  const brandMetrics = useMemo(() => {
+    const brands: Record<string, { count: number; cost: number; weight: number }> = {}
+    bom.forEach(item => {
+      const b = item.part.brand || "Custom Fabricated"
+      if (!brands[b]) {
+        brands[b] = { count: 0, cost: 0, weight: 0 }
+      }
+      brands[b].count += item.quantity
+      brands[b].cost += item.part.cost * item.quantity
+      brands[b].weight += item.part.weight * item.quantity
+    })
+    return Object.entries(brands).map(([name, data]) => ({
+      name,
+      ...data
+    }))
   }, [bom])
 
   // Real-time catalog filtering
@@ -2134,7 +2172,7 @@ export default function Home() {
       <main className="flex-1 max-w-[1720px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 xl:grid-cols-12 gap-6 relative z-10">
         
         {/* LEFT & CENTER WORKSPACE (Tabs: Parts Catalog, Fabricator, Chat) */}
-        <section className={`${activeTab === "chat" ? "xl:col-span-12" : "xl:col-span-8"} flex flex-col gap-6 transition-all duration-300`}>
+        <section className={`${(activeTab === "chat" || activeTab === "dashboard") ? "xl:col-span-12" : "xl:col-span-8"} flex flex-col gap-6 transition-all duration-300`}>
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col flex-1">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-slate-200 pb-4 mb-4">
@@ -2156,6 +2194,12 @@ export default function Home() {
                   className="text-xs font-extrabold py-2 px-4 rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-600 data-[state=active]:to-amber-500 data-[state=active]:text-white text-slate-600 hover:text-orange-600 hover:bg-white/60 cursor-pointer flex items-center gap-2 transition-all duration-300 data-[state=active]:shadow-lg data-[state=active]:shadow-orange-600/15 data-[state=active]:scale-[1.03] active:scale-95 select-none"
                 >
                   <Sparkles className="h-4 w-4 shrink-0 text-orange-500 data-[state=active]:text-white" /> Gemini Technical Assistant
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="dashboard" 
+                  className="text-xs font-extrabold py-2 px-4 rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-700 data-[state=active]:to-teal-600 data-[state=active]:text-white text-slate-600 hover:text-emerald-700 hover:bg-white/60 cursor-pointer flex items-center gap-2 transition-all duration-300 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-700/15 data-[state=active]:scale-[1.03] active:scale-95 select-none"
+                >
+                  <TrendingUp className="h-4 w-4 shrink-0" /> Business Dashboard
                 </TabsTrigger>
               </TabsList>
 
@@ -2859,12 +2903,467 @@ export default function Home() {
               </div>
             </TabsContent>
 
+            {/* TAB 4: REAL-TIME BUSINESS LOGISTICS & FINANCIAL DASHBOARD */}
+            <TabsContent value="dashboard" className="mt-0 focus-visible:ring-0 focus-visible:outline-none animate-in fade-in duration-300">
+              {(() => {
+                const rawWholesale = bomMetrics.totalCost
+                const rawWeight = bomMetrics.totalWeight
+                const shippingQuote = parseFloat((rawWeight * shippingRate).toFixed(2))
+                const retailCost = rawWholesale * (1 + markupPercent / 100)
+                const markupProfit = retailCost - rawWholesale
+                const claddingTax = (retailCost + shippingQuote) * (taxPercent / 100)
+                const grandInvoiceTotal = retailCost + shippingQuote + claddingTax
+
+                return (
+                  <div className="flex flex-col gap-6">
+                    {/* Header Banner */}
+                    <div className="bg-gradient-to-r from-[#0b2447] via-[#0f2d59] to-[#153e77] rounded-3xl p-6 text-white border border-[#1b3e73] shadow-lg relative overflow-hidden">
+                      <div className="absolute top-[-40%] right-[-10%] w-[40%] h-[150%] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
+                      <div className="absolute bottom-[-40%] left-[-10%] w-[40%] h-[150%] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
+                      
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 relative z-10">
+                        <div>
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-400 bg-emerald-950/40 border border-emerald-500/20 px-2.5 py-1 rounded-full">REAL-TIME BUSINESS TELEMETRY</span>
+                          <h2 className="text-2xl font-black mt-2 font-sans leading-tight">Cladding Logistics & Pricing Dashboard</h2>
+                          <p className="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                            Simulate contractor retail margins, estimate regional cladding tax surcharges, and compute Less-Than-Truckload (LTL) freight freight rates on GCS bucket files dynamically.
+                          </p>
+                        </div>
+                        
+                        <div className="flex items-center gap-3 bg-slate-950/40 border border-white/10 p-3 rounded-2xl shrink-0 backdrop-blur-md">
+                          <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <div className="text-left font-mono">
+                            <div className="text-[9px] text-slate-400">LEDGER STATE</div>
+                            <div className="text-xs text-white font-extrabold">{bom.length} Active Records</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* KPI Cards Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {/* CARD 1: Wholesale Material Cost */}
+                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between">
+                        <div>
+                          <span className="text-[10px] font-extrabold tracking-wider font-mono text-slate-400 uppercase">Wholesale Raw Cost</span>
+                          <h3 className="text-xl font-black text-slate-800 mt-1.5">${rawWholesale.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+                          <div className="flex items-center gap-1 mt-1 text-[10px] text-slate-500 font-semibold">
+                            <Package className="h-3 w-3" /> {bomMetrics.activeComponentsCount} total pieces
+                          </div>
+                        </div>
+                        <div className="p-2 rounded-xl bg-slate-100 text-slate-600">
+                          <Package className="h-5 w-5" />
+                        </div>
+                      </div>
+
+                      {/* CARD 2: Markup Profit Margin */}
+                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between">
+                        <div>
+                          <span className="text-[10px] font-extrabold tracking-wider font-mono text-slate-400 uppercase">Simulated Markup Profit</span>
+                          <h3 className="text-xl font-black text-emerald-600 mt-1.5">+${markupProfit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+                          <div className="flex items-center gap-1 mt-1 text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100">
+                            <TrendingUp className="h-3 w-3" /> Margin rate: {markupPercent}%
+                          </div>
+                        </div>
+                        <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+                          <TrendingUp className="h-5 w-5" />
+                        </div>
+                      </div>
+
+                      {/* CARD 3: Logistics & Shipping Quote */}
+                      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between">
+                        <div>
+                          <span className="text-[10px] font-extrabold tracking-wider font-mono text-slate-400 uppercase">Freight Shipping Est.</span>
+                          <h3 className="text-xl font-black text-blue-600 mt-1.5">${shippingQuote.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+                          <div className="flex items-center gap-1 mt-1 text-[10px] text-blue-600 font-semibold">
+                            <Truck className="h-3 w-3" /> {rawWeight.toFixed(1)} lbs LTL Weight
+                          </div>
+                        </div>
+                        <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+                          <Truck className="h-5 w-5" />
+                        </div>
+                      </div>
+
+                      {/* CARD 4: Grand Invoice Total */}
+                      <div className="bg-gradient-to-br from-emerald-800 to-teal-700 p-5 rounded-2xl text-white shadow-md flex items-start justify-between">
+                        <div>
+                          <span className="text-[10px] font-extrabold tracking-wider font-mono text-emerald-100 uppercase">Contractor Invoice Total</span>
+                          <h3 className="text-xl font-black text-white mt-1.5">${grandInvoiceTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+                          <div className="flex items-center gap-1 mt-1 text-[10px] text-emerald-100 font-semibold bg-white/10 px-2 py-0.5 rounded-full backdrop-blur-sm border border-white/5">
+                            <ShieldCheck className="h-3 w-3 text-emerald-300" /> Tax ({taxPercent}%): +${claddingTax.toFixed(2)}
+                          </div>
+                        </div>
+                        <div className="p-2 rounded-xl bg-white/10 text-white">
+                          <ShieldCheck className="h-5 w-5" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Double Column Body */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                      
+                      {/* Left: Interactive Controls Panel */}
+                      <div className="lg:col-span-4 flex flex-col gap-5">
+                        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+                          <h3 className="text-xs font-bold font-mono tracking-widest text-slate-500 uppercase border-b border-slate-100 pb-2 mb-4 flex items-center gap-1.5">
+                            <SlidersHorizontal className="h-4 w-4 text-emerald-600" /> Estimator Controllers
+                          </h3>
+
+                          {/* Controller 1: Dealer Markup */}
+                          <div className="mb-5">
+                            <div className="flex items-center justify-between text-xs text-slate-600 font-extrabold mb-1.5">
+                              <span>Dealer Retail Markup %</span>
+                              <span className="text-emerald-600 font-black bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">{markupPercent}%</span>
+                            </div>
+                            <input 
+                              type="range"
+                              min="0"
+                              max="50"
+                              step="1"
+                              value={markupPercent}
+                              onChange={(e) => setMarkupPercent(parseInt(e.target.value))}
+                              className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                            />
+                            <div className="flex justify-between text-[9px] text-slate-400 mt-1">
+                              <span>0% Wholesale</span>
+                              <span>25% Median</span>
+                              <span>50% Custom Surcharge</span>
+                            </div>
+                          </div>
+
+                          {/* Controller 2: Cladding Tax */}
+                          <div className="mb-5">
+                            <div className="flex items-center justify-between text-xs text-slate-600 font-extrabold mb-1.5">
+                              <span>Regional Cladding Tax %</span>
+                              <span className="text-indigo-600 font-black bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">{taxPercent}%</span>
+                            </div>
+                            <input 
+                              type="range"
+                              min="0"
+                              max="15"
+                              step="0.25"
+                              value={taxPercent}
+                              onChange={(e) => setTaxPercent(parseFloat(e.target.value))}
+                              className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                            />
+                            <div className="flex justify-between text-[9px] text-slate-400 mt-1">
+                              <span>0% Tax-Exempt</span>
+                              <span>7.5% Average</span>
+                              <span>15% Municipal Max</span>
+                            </div>
+                          </div>
+
+                          {/* Controller 3: Shipping Rate */}
+                          <div className="mb-5">
+                            <div className="flex items-center justify-between text-xs text-slate-600 font-extrabold mb-1.5">
+                              <span>Freight Rate (USD per LB)</span>
+                              <span className="text-blue-600 font-black bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">${shippingRate.toFixed(2)} / lb</span>
+                            </div>
+                            <input 
+                              type="range"
+                              min="0.10"
+                              max="2.00"
+                              step="0.05"
+                              value={shippingRate}
+                              onChange={(e) => setShippingRate(parseFloat(e.target.value))}
+                              className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                            />
+                            <div className="flex justify-between text-[9px] text-slate-400 mt-1">
+                              <span>$0.10 Standard Local</span>
+                              <span>$1.05 Long Distance</span>
+                              <span>$2.00 Expedited LTL</span>
+                            </div>
+                          </div>
+
+                          {/* Logistics Box */}
+                          <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl mb-4 text-xs">
+                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">RECOMMENDED CARRIER PROFILE</div>
+                            <div className="text-slate-800 font-extrabold mt-1">{bomMetrics.logisticsType}</div>
+                            <p className="text-[10px] text-slate-500 mt-0.5 leading-normal">{bomMetrics.logisticsDesc}</p>
+                            
+                            <div className="grid grid-cols-2 gap-2 mt-2.5 pt-2.5 border-t border-slate-200 font-mono text-[10px]">
+                              <div>
+                                <span className="text-slate-400">Total Net Weight:</span>
+                                <div className="text-slate-800 font-bold">{rawWeight.toFixed(1)} lbs</div>
+                              </div>
+                              <div>
+                                <span className="text-slate-400">Est. Freight cost:</span>
+                                <div className="text-blue-600 font-bold">${shippingQuote.toFixed(2)}</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Quick Actions Card Actions */}
+                          <div className="flex flex-col gap-2 mt-auto">
+                            <Button 
+                              onClick={injectSampleWorkload}
+                              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs h-9.5 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+                            >
+                              <Plus className="h-4 w-4" /> Inject Premium Sample Data
+                            </Button>
+                            <Button 
+                              onClick={() => setBom([])}
+                              variant="outline"
+                              disabled={bom.length === 0}
+                              className="w-full border-slate-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-slate-500 font-extrabold text-xs h-9.5 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer disabled:bg-slate-50 disabled:text-slate-300 transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" /> Clear Active Quote BOM
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right: Interactive Analytics Visualizations */}
+                      <div className="lg:col-span-8 flex flex-col gap-5">
+                        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex-1 flex flex-col min-h-[300px]">
+                          <h3 className="text-xs font-bold font-mono tracking-widest text-slate-500 uppercase border-b border-slate-100 pb-2 mb-4 flex items-center gap-1.5">
+                            <Activity className="h-4 w-4 text-emerald-600" /> Material & Cost Allocation Visualizations
+                          </h3>
+
+                          {bom.length === 0 ? (
+                            <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-slate-50 border border-dashed border-slate-200 rounded-2xl">
+                              <TrendingUp className="h-10 w-10 text-slate-300 animate-pulse mb-3" />
+                              <h4 className="font-extrabold text-slate-700 text-sm">No Telemetry Signals Detected</h4>
+                              <p className="text-xs text-slate-400 mt-1 max-w-sm leading-relaxed">
+                                Please search and add claddings in the Parts Library, fabricate custom extrusions, or inject sample data to visualize real-time cost charts.
+                              </p>
+                              <Button 
+                                onClick={injectSampleWorkload}
+                                className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold px-4 h-9 rounded-xl cursor-pointer"
+                              >
+                                Load Visual Telemetry Now
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
+                              
+                              {/* CHART A: Brand Allocation (Horizontal bars) */}
+                              <div className="flex flex-col">
+                                <h4 className="text-xs font-bold text-slate-600 mb-3 uppercase tracking-wider font-mono">Quantity by Cladding Manufacturer</h4>
+                                <div className="space-y-3.5 flex-1 flex flex-col justify-center">
+                                  {brandMetrics.map((brand, index) => {
+                                    const maxCount = Math.max(...brandMetrics.map(b => b.count), 1)
+                                    const percentWidth = (brand.count / maxCount) * 100
+                                    const colorClasses = [
+                                      "bg-gradient-to-r from-[#0f2d59] to-[#1d4f8f]",
+                                      "bg-gradient-to-r from-purple-600 to-indigo-500",
+                                      "bg-gradient-to-r from-orange-600 to-amber-500",
+                                      "bg-gradient-to-r from-emerald-600 to-teal-500"
+                                    ]
+                                    const currentColor = colorClasses[index % colorClasses.length]
+
+                                    return (
+                                      <div key={brand.name} className="space-y-1">
+                                        <div className="flex justify-between items-center text-[10px] font-bold">
+                                          <span className="text-slate-700 truncate max-w-[140px]">{brand.name}</span>
+                                          <span className="text-slate-500">{brand.count} pcs <span className="text-slate-400 font-normal">(${brand.cost.toFixed(2)})</span></span>
+                                        </div>
+                                        <div className="h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner flex border border-slate-200/40">
+                                          <div 
+                                            style={{ width: `${percentWidth}%` }}
+                                            className={`h-full rounded-full transition-all duration-1000 ease-out ${currentColor}`}
+                                          />
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* CHART B: Financial Stack Segmentor */}
+                              <div className="flex flex-col border-t md:border-t-0 md:border-l border-slate-150 pt-5 md:pt-0 md:pl-6">
+                                <h4 className="text-xs font-bold text-slate-600 mb-3 uppercase tracking-wider font-mono">Invoice Financial Stack</h4>
+                                
+                                <div className="flex-1 flex flex-col justify-center">
+                                  {/* Segments Stacked bar */}
+                                  <div className="h-5 bg-slate-100 rounded-xl overflow-hidden shadow-inner flex border border-slate-200/50 mb-5 relative">
+                                    <div 
+                                      style={{ width: `${(rawWholesale / grandInvoiceTotal) * 100}%` }}
+                                      className="h-full bg-slate-700 hover:opacity-90 transition-all duration-500"
+                                      title={`Wholesale: $${rawWholesale.toFixed(2)}`}
+                                    />
+                                    <div 
+                                      style={{ width: `${(markupProfit / grandInvoiceTotal) * 100}%` }}
+                                      className="h-full bg-emerald-500 hover:opacity-90 transition-all duration-500"
+                                      title={`Dealer Margin: $${markupProfit.toFixed(2)}`}
+                                    />
+                                    <div 
+                                      style={{ width: `${(shippingQuote / grandInvoiceTotal) * 100}%` }}
+                                      className="h-full bg-blue-500 hover:opacity-90 transition-all duration-500"
+                                      title={`Freight: $${shippingQuote.toFixed(2)}`}
+                                    />
+                                    <div 
+                                      style={{ width: `${(claddingTax / grandInvoiceTotal) * 100}%` }}
+                                      className="h-full bg-indigo-500 hover:opacity-90 transition-all duration-500"
+                                      title={`Tax: $${claddingTax.toFixed(2)}`}
+                                    />
+                                  </div>
+
+                                  {/* Ledger Legend */}
+                                  <div className="space-y-1.5 font-mono text-[10px]">
+                                    <div className="flex justify-between items-center text-slate-600">
+                                      <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-slate-700" /> Raw Wholesale</span>
+                                      <span className="font-extrabold">${rawWholesale.toFixed(2)} <span className="text-slate-400 font-normal">({((rawWholesale/grandInvoiceTotal)*100).toFixed(0)}%)</span></span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-emerald-600">
+                                      <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Dealer Markup Profit</span>
+                                      <span className="font-extrabold">+${markupProfit.toFixed(2)} <span className="text-slate-400 font-normal">({((markupProfit/grandInvoiceTotal)*100).toFixed(0)}%)</span></span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-blue-600">
+                                      <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-blue-500" /> Freight Logistics</span>
+                                      <span className="font-extrabold">${shippingQuote.toFixed(2)} <span className="text-slate-400 font-normal">({((shippingQuote/grandInvoiceTotal)*100).toFixed(0)}%)</span></span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-indigo-600">
+                                      <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-indigo-500" /> Regional Cladding Tax</span>
+                                      <span className="font-extrabold">+${claddingTax.toFixed(2)} <span className="text-slate-400 font-normal">({((claddingTax/grandInvoiceTotal)*100).toFixed(0)}%)</span></span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Active Project Spec Ledger Card */}
+                    <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-3 mb-4 gap-2">
+                        <div>
+                          <h3 className="text-xs font-bold font-mono tracking-widest text-slate-500 uppercase flex items-center gap-1.5">
+                            <FileText className="h-4 w-4 text-emerald-600" /> Real-Time Bill of Materials (BOM) Sales Ledger
+                          </h3>
+                          <p className="text-[10px] text-slate-400 mt-0.5">Edit material list quantities to see real-time chart updates instantly.</p>
+                        </div>
+                        {bom.length > 0 && (
+                          <div className="flex items-center gap-2">
+                            <Button 
+                              onClick={() => {
+                                setIsExportModalOpen(true)
+                              }}
+                              className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-extrabold text-[10px] h-8 px-3 rounded-lg flex items-center gap-1 cursor-pointer transition-colors shadow-none"
+                            >
+                              <Download className="h-3.5 w-3.5" /> Export Signed Quote
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+
+                      {bom.length === 0 ? (
+                        <div className="text-center py-10 bg-slate-50 border border-dashed border-slate-150 rounded-2xl">
+                          <Package className="h-8 w-8 text-slate-300 mx-auto mb-2" />
+                          <h4 className="text-slate-600 text-xs font-extrabold">Active quote ledger is completely empty</h4>
+                          <p className="text-[10px] text-slate-400 mt-1 max-w-sm mx-auto">
+                            Go to the Parts Library tab to find and add parts, configure custom flashings, or click "Inject Premium Sample Data" on the left controls.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="overflow-x-auto select-text">
+                          <table className="w-full text-left border-collapse min-w-[600px] text-xs">
+                            <thead>
+                              <tr className="border-b border-slate-150 text-slate-400 font-mono text-[9px] font-extrabold tracking-wider uppercase">
+                                <th className="py-2.5 px-3">Part Details</th>
+                                <th className="py-2.5 px-3 text-center">Qty</th>
+                                <th className="py-2.5 px-3">Wholesale Price</th>
+                                <th className="py-2.5 px-3 text-emerald-600 font-black">Retail Unit Price</th>
+                                <th className="py-2.5 px-3">Subtotal Raw</th>
+                                <th className="py-2.5 px-3 text-emerald-700 font-black">Subtotal Retail</th>
+                                <th className="py-2.5 px-3 text-right">Action</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 text-slate-700">
+                              {bom.map((item) => {
+                                const unitWholesale = item.part.cost
+                                const unitRetail = unitWholesale * (1 + markupPercent / 100)
+                                const totalWholesale = unitWholesale * item.quantity
+                                const totalRetail = unitRetail * item.quantity
+
+                                return (
+                                  <tr key={item.part.id} className="hover:bg-slate-50 transition-colors">
+                                    <td className="py-3 px-3">
+                                      <div className="flex flex-col">
+                                        <span className="font-extrabold text-slate-800 leading-snug">{item.part.name}</span>
+                                        <div className="flex items-center gap-1.5 mt-0.5 text-[9px] text-slate-400 font-mono font-bold uppercase">
+                                          <span className="text-blue-700">{item.part.brand}</span>
+                                          <span>•</span>
+                                          <span>#{item.part.id}</span>
+                                          <span>•</span>
+                                          <span>{item.part.material || "Metal"}</span>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    
+                                    {/* Interactive Quantity Stepper */}
+                                    <td className="py-3 px-3">
+                                      <div className="flex items-center justify-center gap-2">
+                                        <button 
+                                          onClick={() => {
+                                            if (item.quantity > 1) {
+                                              setBom(prev => prev.map(b => b.part.id === item.part.id ? { ...b, quantity: b.quantity - 1 } : b))
+                                            } else {
+                                              setBom(prev => prev.filter(b => b.part.id !== item.part.id))
+                                            }
+                                          }}
+                                          className="h-5 w-5 rounded border border-slate-200 flex items-center justify-center hover:bg-slate-100 text-slate-500 cursor-pointer text-xs font-bold"
+                                        >
+                                          -
+                                        </button>
+                                        <span className="font-extrabold text-slate-800 text-xs w-6 text-center">{item.quantity}</span>
+                                        <button 
+                                          onClick={() => {
+                                            setBom(prev => prev.map(b => b.part.id === item.part.id ? { ...b, quantity: b.quantity + 1 } : b))
+                                          }}
+                                          className="h-5 w-5 rounded border border-slate-200 flex items-center justify-center hover:bg-slate-100 text-slate-500 cursor-pointer text-xs font-bold"
+                                        >
+                                          +
+                                        </button>
+                                      </div>
+                                    </td>
+
+                                    <td className="py-3 px-3 font-mono text-slate-500">
+                                      ${unitWholesale.toFixed(2)}
+                                    </td>
+                                    <td className="py-3 px-3 font-mono text-emerald-600 font-extrabold">
+                                      ${unitRetail.toFixed(2)}
+                                    </td>
+                                    <td className="py-3 px-3 font-mono text-slate-500">
+                                      ${totalWholesale.toFixed(2)}
+                                    </td>
+                                    <td className="py-3 px-3 font-mono text-emerald-700 font-extrabold">
+                                      ${totalRetail.toFixed(2)}
+                                    </td>
+                                    
+                                    <td className="py-3 px-3 text-right">
+                                      <button 
+                                        onClick={() => {
+                                          setBom(prev => prev.filter(b => b.part.id !== item.part.id))
+                                        }}
+                                        className="text-slate-400 hover:text-red-500 p-1 rounded hover:bg-red-50 cursor-pointer transition-colors"
+                                        title="Delete part from ledger"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                )
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })()}
+            </TabsContent>
+
           </Tabs>
 
         </section>
 
         {/* RIGHT DRAWER: ACTIVE PART SPECS & PROJECT BOM (CART) */}
-        {activeTab !== "chat" && (
+        {activeTab !== "chat" && activeTab !== "dashboard" && (
           <section className="xl:col-span-4 flex flex-col gap-6 animate-in fade-in slide-in-from-right duration-300">
           
           {/* Active component spec panel */}
